@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CX Dash">
+    <meta name="theme-color" content="#030303">
+    
+    <title>OT Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-base: #030303;
+            --glass-bg: rgba(25, 25, 28, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #888899;
+            --accent: #4a8bff;
+            --danger: #ff4444;
+            --success: #33ff99;
+            --radius-lg: 24px;
+            --radius-md: 12px;
+            --font: 'Inter', -apple-system, sans-serif;
+            --glow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        /* Hide Global Scrollbars for Native App Feel */
+        ::-webkit-scrollbar { display: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); -webkit-font-smoothing: antialiased; scrollbar-width: none; -ms-overflow-style: none; }
+        
+        body { 
+            background-color: var(--bg-base); color: var(--text-primary); 
+            padding: 40px; line-height: 1.5; min-height: 100vh; position: relative; overflow-x: hidden;
+        }
+
+        /* Ambient Lights */
+        .ambient-light { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.12; z-index: -1; pointer-events: none; }
+        .light-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #ffffff; }
+        .light-2 { bottom: -20%; right: -10%; width: 600px; height: 600px; background: #88aaff; }
+
+        h1 { font-size: 1.8rem; font-weight: 500; letter-spacing: -0.5px; }
+        h2 { font-size: 1.2rem; color: var(--text-primary); margin-bottom: 24px; font-weight: 500; }
+        
+        .container { max-width: 1400px; margin: 0 auto; animation: fadeIn 0.8s ease; }
+
+        /* Top Utility Nav & Animations */
+        .top-nav { position: absolute; top: 40px; right: 40px; display: flex; gap: 12px; z-index: 50; }
+        .nav-btn {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+            color: var(--text-primary); padding: 10px 20px; border-radius: var(--radius-md); cursor: pointer; transition: 0.3s;
+            font-weight: 500; font-size: 0.9rem; white-space: nowrap;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        
+        @keyframes breatheGlow {
+            0% { box-shadow: 0 0 4px rgba(74,139,255,0.1); border-color: rgba(74,139,255,0.2); }
+            50% { box-shadow: 0 0 12px rgba(74,139,255,0.4); border-color: rgba(74,139,255,0.5); }
+            100% { box-shadow: 0 0 4px rgba(74,139,255,0.1); border-color: rgba(74,139,255,0.2); }
+        }
+        .nav-btn.accent-ui { background: rgba(74, 139, 255, 0.1); color: #fff; animation: breatheGlow 3s infinite ease-in-out; }
+
+        /* Desktop Tabs */
+        .tabs { display: inline-flex; gap: 8px; margin: 24px 0 32px 0; background: rgba(20, 20, 25, 0.6); padding: 6px; border-radius: 16px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); flex-wrap: wrap; }
+        .tab-btn { background: transparent; border: none; color: var(--text-secondary); padding: 10px 24px; border-radius: 12px; cursor: pointer; font-weight: 500; font-size: 0.95rem; transition: 0.3s; }
+        .tab-btn:hover { color: var(--text-primary); }
+        .tab-btn.active { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1); }
+
+        /* Mobile Bottom Nav */
+        .mobile-bottom-nav { display: none; }
+
+        /* Panels & Grids */
+        .panel { background: var(--glass-bg); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; box-shadow: var(--glow); transition: 0.3s; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+
+        input, select { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 12px 16px; border-radius: var(--radius-md); width: 100%; font-size: 0.95rem; outline: none; transition: 0.2s; margin-bottom: 12px; -webkit-appearance: none; }
+        input:focus, select:focus { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.2); box-shadow: 0 0 15px rgba(255,255,255,0.05); }
+        label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; }
+        button { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 12px 24px; border-radius: var(--radius-md); cursor: pointer; font-weight: 500; transition: 0.3s; }
+        button:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        
+        .list-item { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 8px; transition: 0.3s; }
+        .list-item:hover { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        
+        .batch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+        .batch-card { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: 0.3s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.02); }
+        .batch-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
+        
+        .icon-btn { padding: 6px 12px; font-size: 0.85rem; background: transparent; border: 1px solid var(--glass-border); border-radius: 8px; cursor: pointer; color: var(--text-secondary); transition: 0.3s; }
+        .icon-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); border-color: rgba(255,255,255,0.2); transform: scale(1.05); }
+
+        /* Sliders */
+        .slider-row { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+        input[type=range] { -webkit-appearance: none; background: transparent; height: 24px; border: none; padding: 0; margin: 0; width: 100%; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: rgba(255,255,255,0.1); border-radius: 2px; }
+        input[type=range]::-webkit-slider-thumb { height: 16px; width: 16px; border-radius: 50%; background: #ffffff; cursor: pointer; -webkit-appearance: none; margin-top: -6px; box-shadow: 0 0 10px rgba(255,255,255,0.2); transition: 0.2s; }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+        .percent-input-wrapper { display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; padding: 6px 12px; width: 90px; }
+        .percent-input-wrapper input { background: transparent; border: none; padding: 0; margin: 0; width: 100%; font-size: 1rem; color: #fff; box-shadow: none; }
+
+        /* Enchanted Text */
+        .enchanted { background: linear-gradient(110deg, var(--success) 20%, #ffffff 50%, var(--success) 80%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: shine 3s linear infinite; text-shadow: 0 0 15px rgba(51, 255, 153, 0.4); font-weight: 600; }
+        @keyframes shine { to { background-position: 200% center; } }
+
+        /* Unified Calendar Grid */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 16px; }
+        .cal-day { position: relative; aspect-ratio: 1; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); cursor: pointer; text-align: center; transition: 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4px; overflow: hidden; }
+        .cal-day:hover { border-color: rgba(255,255,255,0.3); transform: scale(1.05); z-index: 2; background: rgba(255,255,255,0.05); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+        .cal-day.active { border-color: var(--accent); background: rgba(74, 139, 255, 0.1); box-shadow: inset 0 0 10px rgba(74,139,255,0.2); }
+        .cal-day.today .d-num { color: var(--accent); font-weight: bold; }
+        .cal-day .d-num { font-size: 1rem; line-height: 1; z-index: 1; margin: auto 0; }
+        
+        /* Flex Fix for Sold Days */
+        .cal-day.has-sales { justify-content: flex-start; padding-top: 6px; }
+        .cal-day.has-sales .d-num { margin: 0 0 2px 0; font-size: 0.85rem; }
+        .cal-day .d-meta { font-size: 0.65rem; line-height: 1.1; white-space: nowrap; }
+        .cal-day .d-meta.sold { color: var(--success); }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-box { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 32px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; box-shadow: var(--glow); transform: translateY(30px) scale(0.95); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
+
+        .kpi-card { display: flex; flex-direction: column; gap: 4px; }
+        .kpi-label { color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; }
+        .kpi-value { font-size: 2.2rem; font-weight: 300; letter-spacing: -1px; }
+
+        .tab-content { display: none; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .tab-content.active { display: block; }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); filter: blur(4px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper input { margin-bottom: 0; padding-right: 35px; }
+        .input-wrapper .suffix { position: absolute; right: 14px; color: var(--text-secondary); font-weight: 500; }
+        
+        /* Whiteboard Frame */
+        #whiteboard-frame { width: 100%; height: 85vh; border: none; border-radius: var(--radius-lg); background: #fff; }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 768px) {
+            body { padding: 20px 16px; padding-bottom: 100px; /* Buffer for bottom nav */ }
+            header { margin-top: 70px; text-align: center; margin-bottom: 16px; }
+            .top-nav { top: 16px; right: 16px; gap: 8px; justify-content: flex-end; width: auto; position: absolute; }
+            .nav-btn { padding: 6px 12px; font-size: 0.8rem; }
+            
+            .tabs { display: none !important; } /* Hide Desktop Tabs */
+            
+            /* Native Bottom App Bar */
+            .mobile-bottom-nav {
+                display: flex; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+                background: rgba(25, 25, 28, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+                border: 1px solid var(--glass-border); border-radius: 24px; padding: 8px; gap: 4px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 1000; width: 92%; max-width: 400px;
+                justify-content: space-between;
+            }
+            .mobile-btn {
+                background: transparent; border: none; color: var(--text-secondary); padding: 8px 0;
+                font-size: 0.75rem; flex: 1; text-align: center; border-radius: 16px; 
+                display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.3s; font-weight: 500;
+            }
+            .mobile-btn span { font-size: 1.2rem; } /* Emoji size */
+            .mobile-btn.active { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+
+            .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 16px; }
+            .panel { padding: 20px; }
+            .slider-row { flex-wrap: wrap; }
+            .slider-row > span { flex: 1 1 100%; margin-bottom: 8px; }
+            .modal-box { padding: 20px; }
+            .cal-day .d-num { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="ambient-light light-1"></div>
+<div class="ambient-light light-2"></div>
+
+<div class="top-nav">
+    <button class="nav-btn accent-ui" onclick="switchTab('whiteboard')">✏️ Whiteboard</button>
+    <button class="nav-btn" onclick="window.location.reload()">↻ Refresh</button>
+</div>
+
+<div class="mobile-bottom-nav">
+    <button class="mobile-btn active" onclick="switchTab('overview')"><span>📊</span>Overview</button>
+    <button class="mobile-btn" onclick="switchTab('db')"><span>🗄️</span>Database</button>
+    <button class="mobile-btn" onclick="switchTab('chem')"><span>🧪</span>Formula</button>
+    <button class="mobile-btn" onclick="switchTab('batch')"><span>📦</span>Batch</button>
+</div>
+
+<div id="confirm-modal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 400px; text-align: center;">
+        <h2 style="color: var(--danger); margin-bottom: 12px; font-size: 1.5rem;">Delete Batch</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 30px;">This will instantly refund all materials, hardware, and packaging used back to your active stock.</p>
+        <div style="display: flex; gap: 16px; justify-content: center;">
+            <button onclick="closeModal('confirm-modal')" style="flex: 1;">Cancel</button>
+            <button style="background: rgba(255,68,68,0.1); color: var(--danger); border-color: var(--danger); flex: 1;" onclick="executeDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div id="batch-detail-modal" class="modal-overlay">
+    <div class="modal-box" id="batch-detail-content"></div>
+</div>
+
+<div class="container">
+    <header>
+        <h1>OT Dashboard</h1>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">Business mein Akh v.1.2 <span id="exchange-rate-display" style="color: var(--success);">Fetching live rates...</span></p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('overview')">Overview & Sales</button>
+        <button class="tab-btn" onclick="switchTab('db')">Database & Stock</button>
+        <button class="tab-btn" onclick="switchTab('chem')">Formulator</button>
+        <button class="tab-btn" onclick="switchTab('batch')">Batch Builder</button>
+    </div>
+
+    <div id="whiteboard" class="tab-content">
+        <div class="panel" style="padding: 0; overflow: hidden; border-color: var(--accent);">
+            <iframe id="whiteboard-frame" src="https://excalidraw.com/"></iframe>
+        </div>
+    </div>
+
+    <div id="overview" class="tab-content active">
+        <div class="grid-3 panel" style="background: linear-gradient(135deg, rgba(20,20,25,0.8) 0%, rgba(10,10,12,0.8) 100%); padding-bottom: 24px;">
+            <div class="kpi-card">
+                <div class="kpi-label" style="color: var(--success);">Realized Net Profit</div>
+                <div class="kpi-value enchanted" id="ov-realized-profit">€0.00</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Logged sales profit.</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Potential Gross Revenue</div>
+                <div class="kpi-value" id="ov-pot-rev">€0.00</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Total retail value.</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Total Sunk Costs</div>
+                <div class="kpi-value" id="ov-cost">€0.00</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Expenses from batches.</div>
+            </div>
+        </div>
+
+        <div class="panel" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;" onclick="toggleChart()">
+                <h3 style="margin: 0; font-size: 1.05rem; font-weight: 500;">View Realized Profit Timeline</h3>
+                <span id="chart-toggle-icon" style="color: var(--text-secondary); transition: 0.3s;">▼</span>
+            </div>
+            <div id="profit-chart-container" style="display: none; height: 250px; margin-top: 24px; position: relative;">
+                <canvas id="profitChart"></canvas>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Completed Batches Ledger</h2>
+            <div id="ledger-list" class="batch-grid"></div>
+        </div>
+    </div>
+
+    <div id="db" class="tab-content">
+        <div class="grid-2">
+            <div class="panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="margin:0;">Suppliers</h2>
+                    <button onclick="toggleForm('sup-form')">+ Add</button>
+                </div>
+                
+                <div id="sup-form" style="display: none; background: rgba(0,0,0,0.3); padding: 24px; border-radius: var(--radius-md); margin-bottom: 24px; border: 1px solid var(--glass-border);">
+                    <input type="text" id="sup-name" placeholder="Supplier Name">
+                    
+                    <input list="country-flags" id="sup-loc" placeholder="Location (e.g. 🇺🇸 USA)">
+                    <datalist id="country-flags">
+                        <option value="🇺🇸 USA"></option>
+                        <option value="🇳🇱 NL"></option>
+                        <option value="🇩🇪 GER"></option>
+                        <option value="🇫🇷 FR"></option>
+                        <option value="🇬🇧 UK"></option>
+                        <option value="🇨🇦 CAN"></option>
+                        <option value="🇨🇭 CHE"></option>
+                        <option value="🇨🇳 CHN"></option>
+                    </datalist>
+
+                    <input type="text" id="sup-url" placeholder="Website URL (https://)">
+                    <div style="display: flex; gap: 12px;">
+                        <select id="sup-curr"><option value="EUR">Euro (€)</option><option value="USD">USD ($)</option></select>
+                        <input type="number" id="sup-ship" placeholder="Shipping Cost">
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 16px;">
+                        <input type="checkbox" id="sup-has-free" style="width: auto; margin:0;" onchange="document.getElementById('sup-thresh').style.display = this.checked ? 'block' : 'none'">
+                        <label style="margin:0;">Free shipping over amount?</label>
+                    </div>
+                    <input type="number" id="sup-thresh" placeholder="Threshold Amount (In Native Currency)" style="display: none;">
+                    <button style="width: 100%; margin-top: 10px;" onclick="saveSupplier()">Save Supplier</button>
+                </div>
+                <div id="sup-list"></div>
+            </div>
+
+            <div class="panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="margin:0;">Inventory Items</h2>
+                    <button onclick="openItemForm()">+ Add</button>
+                </div>
+
+                <div id="item-form" style="display: none; background: rgba(0,0,0,0.3); padding: 24px; border-radius: var(--radius-md); margin-bottom: 24px; border: 1px solid var(--glass-border);">
+                    <input type="hidden" id="edit-item-id">
+                    <input type="text" id="item-name" placeholder="Item Name">
+                    <select id="item-sup"></select>
+                    <div style="display: flex; gap: 12px;">
+                        <select id="item-cat" onchange="updateItemFormUI()">
+                            <option value="Material">Liquid/Material</option>
+                            <option value="Hardware">Hardware (Vapes/Carts)</option>
+                            <option value="Packaging">Packaging (Boxes/Bags)</option>
+                        </select>
+                        <select id="item-unit">
+                            <option value="g">Grams (g)</option>
+                            <option value="ml">Milliliters (ml)</option>
+                            <option value="pcs">Pieces (pcs)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <input type="number" id="item-pkg-qty" placeholder="Pkg Amount">
+                        <span style="color: var(--text-secondary);">for</span>
+                        <input type="number" id="item-pkg-cost" placeholder="Price">
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <label>Current Stock</label>
+                        <input type="number" id="item-stock" placeholder="0">
+                    </div>
+                    <button style="width: 100%; margin-top: 10px;" onclick="saveItem()">Save Item</button>
+                </div>
+                
+                <h3 style="font-size: 0.95rem; color: var(--text-secondary); margin: 20px 0 10px;">Materials</h3>
+                <div id="list-mats"></div>
+                <h3 style="font-size: 0.95rem; color: var(--text-secondary); margin: 20px 0 10px;">Hardware & Packaging</h3>
+                <div id="list-hw"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="chem" class="tab-content">
+        <div class="grid-2">
+            <div class="panel">
+                <h2>Composition Designer</h2>
+                <input type="hidden" id="edit-form-id">
+                
+                <div style="margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border);">
+                    <label style="margin-bottom: 12px;">Available Materials</label>
+                    <div id="chem-available-list" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+                </div>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                    <div style="font-size: 0.95rem; color: var(--text-secondary);">Total Capacity: <span id="chem-total" style="color: var(--text-primary); font-weight: 600;">0</span>%</div>
+                </div>
+
+                <div class="grid-2" style="gap: 24px; margin-bottom: 24px;">
+                    <div id="chem-sliders"></div>
+                    <div style="position: relative; height: 220px; display:flex; align-items:center; justify-content:center;"><canvas id="chemChart"></canvas></div>
+                </div>
+                
+                <div style="margin-top: 24px; border-top: 1px solid var(--glass-border); padding-top: 24px;">
+                    <input type="text" id="form-name" placeholder="Formulation Name (e.g. Lemon Haze)">
+                    <input type="text" id="form-img" placeholder="Image URL (PNG ideal)">
+                    <button style="width: 100%; background: rgba(255,255,255,0.1);" onclick="saveFormulation()">Save Template</button>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Saved Templates</h2>
+                <div id="form-library" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="batch" class="tab-content">
+        <div class="grid-2">
+            <div class="panel">
+                <h2>1. Batch Configuration</h2>
+                <label>Select Formulation Template</label>
+                <select id="batch-form-select" onchange="calcMaxBatch()"></select>
+                
+                <div class="grid-2" style="gap: 16px; margin-top: 16px;">
+                    <div><label>Hardware</label><select id="batch-hw-select" onchange="calcMaxBatch()"></select></div>
+                    <div><label>Packaging</label><select id="batch-pkg-select" onchange="calcMaxBatch()"></select></div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.02); border-radius: var(--radius-md); padding: 20px; margin-top: 24px; border: 1px solid var(--glass-border);">
+                    <div style="font-size: 0.9rem; color: var(--text-secondary);">Max Yield (Stock Limit):</div>
+                    <div id="batch-max-yield" style="font-size: 2rem; font-weight: 500; color: var(--accent); margin-top: 8px;">0 units</div>
+                    <div id="batch-limiting-factor" style="font-size: 0.85rem; color: var(--danger); margin-top: 4px;"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>2. Production Target</h2>
+                <label>Desired Yield (Units)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="batch-target-yield" placeholder="0" min="0" oninput="updateBatchProjection()">
+                    <span class="suffix">u</span>
+                </div>
+                
+                <label style="margin-top: 16px;">Retail Price per Unit</label>
+                <div class="input-wrapper">
+                    <input type="number" id="batch-retail" placeholder="0" min="0" oninput="updateBatchProjection()">
+                    <span class="suffix">€</span>
+                </div>
+
+                <div id="batch-mix-breakdown" style="margin-top: 24px; font-size: 0.9rem; color: var(--text-secondary);"></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>3. Financial Projection</h2>
+            <div class="grid-3" style="margin-bottom: 24px;">
+                <div class="kpi-card"><div class="kpi-label">Total Cost</div><div class="kpi-value" id="calc-cost">€0.00</div></div>
+                <div class="kpi-card"><div class="kpi-label">Potential Revenue</div><div class="kpi-value" id="calc-rev">€0.00</div></div>
+                <div class="kpi-card"><div class="kpi-label" style="color: var(--text-primary);">Potential Profit</div><div class="kpi-value" id="calc-profit" style="color: var(--accent);">€0.00</div></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); font-size: 1rem; padding: 12px 32px;" onclick="finalizeBatch()">Finalize & Deduct Stock</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // System State
+    let state = JSON.parse(localStorage.getItem('cxDiamondMobile')) || { suppliers: [], items: [], chemistry: [], formulations: [], batches: [] };
+    let exchangeRateUSD = 0.92;
+    let batchToDelete = null;
+    let activeBatchView = null; 
+    let activeCalDate = new Date();
+
+    const saveState = () => localStorage.setItem('cxDiamondMobile', JSON.stringify(state));
+    const genId = () => Math.random().toString(36).substr(2, 6);
+    const fmt = (n) => `€${parseFloat(n || 0).toFixed(2)}`;
+    const formatStrDate = (isoString) => { if(!isoString) return ''; let [y, m, d] = isoString.split('-'); return `${d}.${m}.${y}`; }
+    const getLocalIso = (d) => { const offset = d.getTimezoneOffset() * 60000; return (new Date(d - offset)).toISOString().split('T')[0]; }
+
+    function switchTab(id) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn, .mobile-btn').forEach(el => el.classList.remove('active'));
+        if(id !== 'whiteboard') { 
+            document.querySelectorAll(`[onclick="switchTab('${id}')"]`).forEach(el => el.classList.add('active')); 
+        }
+        document.getElementById(id).classList.add('active');
+    }
+    
+    function toggleForm(id) { const el = document.getElementById(id); el.style.display = el.style.display === 'none' || el.style.display === '' ? 'block' : 'none'; }
+
+    async function initCurrency() {
+        try {
+            const res = await fetch('https://open.er-api.com/v6/latest/USD');
+            const data = await res.json();
+            if(data && data.rates && data.rates.EUR) { exchangeRateUSD = data.rates.EUR; document.getElementById('exchange-rate-display').innerText = `(Live EUR/USD: ${exchangeRateUSD.toFixed(3)})`; }
+        } catch(e) { document.getElementById('exchange-rate-display').innerText = `(Fallback EUR/USD: 0.92)`; }
+        renderDb();
+    }
+
+    function getCostInEur(cost, supplierId) {
+        const sup = state.suppliers.find(s => s.id === supplierId);
+        if(sup && sup.curr === 'USD') return (cost || 0) * exchangeRateUSD;
+        return parseFloat(cost) || 0;
+    }
+
+    // --- OVERVIEW & PROFIT CHART ---
+    let profitChartInst = null;
+
+    function toggleChart() {
+        const container = document.getElementById('profit-chart-container');
+        const icon = document.getElementById('chart-toggle-icon');
+        if(container.style.display === 'none') {
+            container.style.display = 'block'; icon.style.transform = 'rotate(180deg)'; renderProfitChart();
+        } else {
+            container.style.display = 'none'; icon.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    function renderProfitChart() {
+        let events = [];
+        state.batches.forEach(b => {
+            // Treat cost as hitting on the first sales date, or today if no sales, just for visual timeline flow.
+            // A better way: just plot cumulative Realized Profit per day based on all logged sales.
+            if(b.sales) {
+                b.sales.forEach(s => { events.push({ date: s.date, rev: (s.qty * s.price), costFactor: (b.cost / b.yieldQty) * s.qty }); });
+            }
+        });
+
+        let daily = {};
+        events.forEach(e => {
+            if(!daily[e.date]) daily[e.date] = 0;
+            daily[e.date] += (e.rev - e.costFactor); // Net profit of those specific units sold
+        });
+
+        let sortedDates = Object.keys(daily).sort();
+        let cumulative = 0; let labels = []; let data = [];
+        
+        // If empty, put a placeholder
+        if(sortedDates.length === 0) {
+            labels = [formatStrDate(getLocalIso(new Date()))]; data = [0];
+        } else {
+            sortedDates.forEach(d => { cumulative += daily[d]; labels.push(formatStrDate(d)); data.push(cumulative); });
+        }
+
+        const ctx = document.getElementById('profitChart').getContext('2d');
+        if(profitChartInst) profitChartInst.destroy();
+        Chart.defaults.color = '#888899'; Chart.defaults.font.family = 'Inter';
+        
+        profitChartInst = new Chart(ctx, {
+            type: 'line',
+            data: { labels: labels, datasets: [{ label: 'Cumulative Net Profit (€)', data: data, borderColor: '#33ff99', backgroundColor: 'rgba(51, 255, 153, 0.1)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
+        });
+    }
+
+    function renderOverview() {
+        let potRev = 0, totalCost = 0, realizedRev = 0;
+        document.getElementById('ledger-list').innerHTML = state.batches.length === 0 ? "<div style='color:var(--text-secondary)'>No batches completed yet.</div>" : state.batches.map(b => {
+            potRev += (b.revenue || 0); totalCost += (b.cost || 0);
+            let sales = b.sales || []; 
+            let batchRealized = sales.reduce((sum, s) => sum + ((s.qty || 0) * (s.price || 0)), 0);
+            let unitsSold = sales.reduce((sum, s) => sum + (s.qty || 0), 0);
+            realizedRev += batchRealized;
+            return `
+            <div class="batch-card" onclick="openBatchDetails('${b.id}')">
+                <div style="margin-bottom: 16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <strong style="color:#fff; font-size: 1.1rem;">${b.formName || 'Unnamed'}</strong>
+                        <span style="font-size:0.75rem; color:var(--text-secondary); background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px;">ID: ${b.id}</span>
+                    </div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top:10px;">Yield: ${b.yieldQty || 0} u | Sold: <span style="color:${unitsSold>0?'var(--text-primary)':'inherit'}">${unitsSold}</span></div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary);">Cost: ${fmt(b.cost)}</div>
+                </div>
+                <div style="border-top: 1px solid var(--glass-border); padding-top: 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="color: var(--success); font-weight: 600;">${fmt(batchRealized)} Realized</div>
+                </div>
+            </div>`;
+        }).reverse().join('');
+        document.getElementById('ov-pot-rev').innerText = fmt(potRev);
+        document.getElementById('ov-cost').innerText = fmt(totalCost);
+        document.getElementById('ov-realized-profit').innerText = fmt(realizedRev - totalCost);
+        
+        if(document.getElementById('profit-chart-container').style.display === 'block') renderProfitChart();
+    }
+
+    // --- CALENDAR & MODAL ---
+    function openBatchDetails(id) { activeBatchView = id; activeCalDate = new Date(); try { renderBatchModalInner(); document.getElementById('batch-detail-modal').classList.add('active'); } catch (e) { alert("Missing legacy data. Recreate batch."); } }
+    function changeMonth(dir) { activeCalDate.setMonth(activeCalDate.getMonth() + dir); renderBatchModalInner(); }
+    function selectDate(dateStr) { activeCalDate = new Date(dateStr); renderBatchModalInner(); }
+
+    function renderBatchModalInner() {
+        const b = state.batches.find(x => x.id === activeBatchView);
+        if(!b) return;
+
+        let sales = b.sales || []; let receipt = b.receipt || []; 
+        let cost = b.cost || 0; let yieldQty = b.yieldQty || 0; let retail = b.retail || 0; let shippingCost = b.shippingCost || 0;
+        let unitsSold = sales.reduce((sum, s) => sum + (s.qty || 0), 0);
+        let realizedRev = sales.reduce((sum, s) => sum + ((s.qty || 0) * (s.price || 0)), 0);
+        let realizedProfit = realizedRev - cost;
+        let receiptHtml = receipt.map(r => `<div class="list-item" style="padding:10px 14px; margin-bottom:6px; display:flex; justify-content:space-between; background:transparent;"><span>${(r.qty||0).toFixed(1)}${r.unit||''} ${r.name||'Item'}</span><span style="font-weight:500;">${fmt(r.cost)}</span></div>`).join('');
+        
+        const todayStr = getLocalIso(new Date()); const selStr = getLocalIso(activeCalDate);
+        const y = activeCalDate.getFullYear(), m = activeCalDate.getMonth();
+        const firstDay = new Date(y, m, 1).getDay(), daysInMonth = new Date(y, m + 1, 0).getDate();
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        let calHtml = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <button class="icon-btn" style="border:none;" onclick="changeMonth(-1)">◀</button>
+                <strong style="color:var(--text-primary); font-size:1.1rem;">${monthNames[m]} ${y}</strong>
+                <button class="icon-btn" style="border:none;" onclick="changeMonth(1)">▶</button>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; text-align:center; font-size:0.85rem; color:var(--text-secondary); margin-bottom:8px; font-weight:500;">
+                <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+            </div><div class="cal-grid">`;
+
+        for(let i=0; i<firstDay; i++) calHtml += `<div style="background:transparent; border:none;"></div>`;
+        for(let d=1; d<=daysInMonth; d++) {
+            let dateKey = `${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
+            let daySales = sales.filter(s => s.date === dateKey);
+            let dSold = daySales.reduce((sum, s) => sum + (s.qty || 0), 0);
+            let dRev = daySales.reduce((sum, s) => sum + ((s.qty || 0) * (s.price || 0)), 0);
+            let hasSalesClass = dSold > 0 ? 'has-sales' : '';
+
+            calHtml += `<div class="cal-day ${hasSalesClass} ${dateKey===todayStr?'today':''} ${dateKey===selStr?'active':''}" onclick="selectDate('${dateKey}')">
+                <div class="d-num">${d}</div>
+                ${dSold > 0 ? `<div class="d-meta sold">${dSold} u</div><div class="d-meta">${fmt(dRev)}</div>` : ''}
+            </div>`;
+        }
+        calHtml += `</div>`;
+
+        let selSales = sales.map((s, idx) => ({...s, origIdx: idx})).filter(s => s.date === selStr);
+        let salesHtml = selSales.length === 0 ? "<div style='font-size:0.9rem; color:var(--text-secondary)'>No sales logged.</div>" : selSales.map(s => `
+            <div class="list-item" style="padding:10px 14px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; background:transparent;">
+                <span>${s.qty} units @ ${fmt(s.price)}</span>
+                <span style="font-weight:600;">${fmt((s.qty||0) * (s.price||0))} <button class="icon-btn" style="padding:4px 8px; border:none; margin-left:12px; color:var(--danger); background: rgba(255,68,68,0.1);" onclick="deleteSale('${b.id}', ${s.origIdx});">✕</button></span>
+            </div>`).join('');
+
+        document.getElementById('batch-detail-content').innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 24px;">
+                <h2 style="margin:0; font-size:1.6rem; font-weight:600; color:var(--accent);">${b.formName || 'Unnamed'}</h2>
+                <button class="icon-btn" style="border:none;" onclick="closeModal('batch-detail-modal')">✕ Close</button>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:20px;">
+                <div style="display:flex; gap:16px; flex-wrap:wrap;">
+                    <div class="list-item" style="margin:0; flex:1;">
+                        <div style="font-size:0.85rem; color:var(--text-secondary);">Total Cost</div>
+                        <div style="font-size:1.4rem; font-weight:400; margin-top:4px;">${fmt(cost)}</div>
+                    </div>
+                    <div class="list-item" style="margin:0; flex:1; border-color:rgba(51, 255, 153, 0.3);">
+                        <div style="font-size:0.85rem; color:var(--text-secondary);">Realized Profit</div>
+                        <div style="font-size:1.4rem; font-weight:600;" class="${realizedProfit >= 0 ? 'enchanted' : ''}">${fmt(realizedProfit)}</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="font-size:1.1rem; margin-bottom:12px; color:var(--text-primary); font-weight:500;">Cost Breakdown</h3>
+                    <div style="background:var(--glass-bg); border:1px solid var(--glass-border); padding:16px; border-radius:16px;">
+                        ${receiptHtml}
+                        <div class="list-item" style="padding:10px 14px; margin:0; display:flex; justify-content:space-between; background:transparent;"><span>Shipping Adjustments</span><span style="font-weight:500;">${fmt(shippingCost)}</span></div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 8px;">
+                    <h3 style="font-size:1.1rem; margin-bottom:12px; color:var(--text-primary); font-weight:500;">Sales Ledger <span style="font-size:0.9rem; font-weight:400; color:var(--text-secondary);">(${unitsSold}/${yieldQty} Sold)</span></h3>
+                    <div style="background:var(--glass-bg); border:1px solid var(--glass-border); padding:20px; border-radius:16px;">
+                        ${calHtml}
+                        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--glass-border);">
+                            <h4 style="font-size:1rem; margin-bottom:16px; font-weight:500;">Logs for ${formatStrDate(selStr)}</h4>
+                            <div style="margin-bottom: 20px;">${salesHtml}</div>
+                            <div style="display:flex; gap:8px; align-items:center;">
+                                <div class="input-wrapper" style="flex:1;"><input type="number" id="sale-qty" placeholder="Qty" min="1" max="${yieldQty - unitsSold}"><span class="suffix">u</span></div>
+                                <div class="input-wrapper" style="flex:1.5;"><input type="number" id="sale-price" placeholder="Price" value="${retail}"><span class="suffix">€</span></div>
+                                <button onclick="addSale('${b.id}')" style="background:rgba(255,255,255,0.1); padding: 12px 16px;">Log</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:center; gap:16px; margin-top: 16px; padding-top: 20px; border-top:1px solid var(--glass-border);">
+                    <button class="icon-btn" style="padding: 10px 24px; font-size: 0.95rem;" onclick="editBatch('${b.id}', event)">✎ Edit Batch</button>
+                    <button class="icon-btn" style="padding: 10px 24px; font-size: 0.95rem; color:var(--danger); border-color:rgba(255,68,68,0.3);" onclick="openDeleteModal('${b.id}', event)">🗑 Delete Batch</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function addSale(batchId) {
+        const b = state.batches.find(x => x.id === batchId);
+        const date = getLocalIso(activeCalDate);
+        const qty = parseInt(document.getElementById('sale-qty').value) || 0;
+        const price = parseFloat(document.getElementById('sale-price').value) || 0;
+        if (!b.sales) b.sales = [];
+        let unitsSold = b.sales.reduce((sum, s) => sum + (s.qty || 0), 0);
+        if(qty <= 0) return alert("Enter valid quantity.");
+        if(qty > ((b.yieldQty||0) - unitsSold)) return alert("Cannot sell more than available yield.");
+        b.sales.push({ date, qty, price }); saveState(); renderOverview(); renderBatchModalInner();
+    }
+
+    function deleteSale(batchId, saleIdx) { state.batches.find(x => x.id === batchId).sales.splice(saleIdx, 1); saveState(); renderOverview(); renderBatchModalInner(); }
+    function openDeleteModal(id, event) { if(event) event.stopPropagation(); batchToDelete = id; document.getElementById('confirm-modal').classList.add('active'); closeModal('batch-detail-modal'); }
+    function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+    
+    function executeDelete() {
+        if(batchToDelete) {
+            const b = state.batches.find(x => x.id === batchToDelete);
+            (b.deductions || []).forEach(d => { const item = state.items.find(i => i.id === d.itemId); if(item) item.stock += d.qty; });
+            state.batches = state.batches.filter(b => b.id !== batchToDelete);
+            saveState(); renderDb(); renderOverview(); closeModal('confirm-modal');
+        }
+    }
+
+    function editBatch(batchId, event) {
+        if(event) event.stopPropagation(); closeModal('batch-detail-modal');
+        const b = state.batches.find(x => x.id === batchId);
+        if(!b) return;
+        (b.deductions || []).forEach(d => { const item = state.items.find(i => i.id === d.itemId); if(item) item.stock += d.qty; });
+        state.batches = state.batches.filter(x => x.id !== batchId); 
+        saveState(); renderDb(); 
+        setTimeout(() => {
+            document.getElementById('batch-form-select').value = b.formId || "";
+            document.getElementById('batch-hw-select').value = b.hwId || "";
+            document.getElementById('batch-pkg-select').value = b.pkgId || "";
+            document.getElementById('batch-target-yield').value = b.yieldQty || "";
+            document.getElementById('batch-retail').value = b.retail || "";
+            calcMaxBatch(); switchTab('batch'); renderOverview();
+        }, 100);
+    }
+
+    // --- DATABASE ---
+    function updateItemFormUI() { document.getElementById('item-unit').value = document.getElementById('item-cat').value === 'Material' ? 'g' : 'pcs'; }
+
+    function openItemForm(editId = null) {
+        const form = document.getElementById('item-form'); form.style.display = 'block';
+        if(editId) {
+            const item = state.items.find(i => i.id === editId);
+            document.getElementById('edit-item-id').value = item.id; document.getElementById('item-name').value = item.name;
+            document.getElementById('item-sup').value = item.supId; document.getElementById('item-cat').value = item.cat;
+            document.getElementById('item-unit').value = item.unit; document.getElementById('item-pkg-qty').value = item.pkgQty;
+            document.getElementById('item-pkg-cost').value = item.pkgCost; document.getElementById('item-stock').value = item.stock;
+        } else { ['edit-item-id', 'item-name', 'item-pkg-qty', 'item-pkg-cost', 'item-stock'].forEach(id => document.getElementById(id).value = ''); }
+    }
+
+    function saveSupplier() {
+        state.suppliers.push({
+            id: genId(), name: document.getElementById('sup-name').value || "Unnamed", url: document.getElementById('sup-url').value,
+            loc: document.getElementById('sup-loc').value || "", curr: document.getElementById('sup-curr').value, 
+            ship: parseFloat(document.getElementById('sup-ship').value) || 0, hasFreeShip: document.getElementById('sup-has-free').checked, 
+            thresh: parseFloat(document.getElementById('sup-thresh').value) || 0
+        });
+        ['sup-name', 'sup-loc', 'sup-url', 'sup-ship', 'sup-thresh'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('sup-has-free').checked = false; document.getElementById('sup-thresh').style.display = 'none';
+        saveState(); renderDb(); document.getElementById('sup-form').style.display = 'none';
+    }
+
+    function saveItem() {
+        if(state.suppliers.length === 0) return alert("Add a supplier first.");
+        const editId = document.getElementById('edit-item-id').value;
+        const newItem = {
+            id: editId || genId(), name: document.getElementById('item-name').value || "Unnamed", supId: document.getElementById('item-sup').value,
+            cat: document.getElementById('item-cat').value, unit: document.getElementById('item-unit').value,
+            pkgQty: parseFloat(document.getElementById('item-pkg-qty').value) || 1, pkgCost: parseFloat(document.getElementById('item-pkg-cost').value) || 0,
+            stock: parseFloat(document.getElementById('item-stock').value) || 0
+        };
+        if(editId) { const idx = state.items.findIndex(i => i.id === editId); if(idx !== -1) state.items[idx] = newItem; } else state.items.push(newItem);
+        saveState(); renderDb(); document.getElementById('item-form').style.display = 'none';
+    }
+
+    function updateQuickStock(id, val) { const item = state.items.find(i=>i.id===id); if(item) { item.stock = parseFloat(val)||0; saveState(); calcMaxBatch(); } }
+    function delSup(id) { state.suppliers = state.suppliers.filter(s=>s.id!==id); saveState(); renderDb(); }
+    function delItem(id) { state.items = state.items.filter(i=>i.id!==id); saveState(); renderDb(); }
+
+    function renderDb() {
+        document.getElementById('sup-list').innerHTML = state.suppliers.map(s => `
+            <div class="list-item" style="display:flex; justify-content:space-between; align-items:center;">
+                <div><strong style="font-size:1.05rem;">${s.name}</strong> <span style="font-size:0.85rem; color:var(--text-secondary)">(${s.loc ? s.loc + ' | ' : ''}${s.curr})</span> ${s.hasFreeShip ? `<span style="font-size:0.8rem; color:var(--success); margin-left:8px;">(Free Ship > ${s.thresh}${s.curr})</span>` : ''}<br>${s.url ? `<a href="${s.url}" target="_blank" style="color:var(--text-secondary); font-size:0.85rem;">↗ Visit Site</a>` : ''}</div>
+                <button class="icon-btn" onclick="delSup('${s.id}')">✕</button>
+            </div>
+        `).join('');
+
+        document.getElementById('item-sup').innerHTML = state.suppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        document.getElementById('batch-form-select').innerHTML = `<option value="">-- Select Template --</option>` + state.formulations.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+        document.getElementById('batch-hw-select').innerHTML = `<option value="">-- None --</option>` + state.items.filter(i=>i.cat==='Hardware').map(i => `<option value="${i.id}">${i.name} (Stock: ${i.stock})</option>`).join('');
+        document.getElementById('batch-pkg-select').innerHTML = `<option value="">-- None --</option>` + state.items.filter(i=>i.cat==='Packaging').map(i => `<option value="${i.id}">${i.name} (Stock: ${i.stock})</option>`).join('');
+
+        const renderItemList = (items) => items.map(i => {
+            return `<div class="list-item" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                <div style="flex:1; min-width:200px;">
+                    <strong style="font-size:1.05rem;">${i.name}</strong><br>
+                    <div style="display:flex; align-items:center; gap:8px; font-size: 0.85rem; color: var(--text-secondary); margin-top:6px; flex-wrap:wrap;">
+                        Stock: <input type="number" value="${i.stock}" onchange="updateQuickStock('${i.id}', this.value)" style="width:80px; padding:6px; margin:0; text-align:center;"> ${i.unit} <span style="margin-left:8px; color:var(--text-primary); font-weight:500;">Pkg: ${i.pkgQty}${i.unit} for ${fmt(getCostInEur(i.pkgCost, i.supId))}</span>
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="icon-btn" onclick="openItemForm('${i.id}')">✎</button>
+                    <button class="icon-btn" style="color:var(--danger); border-color:rgba(255,68,68,0.3);" onclick="delItem('${i.id}')">✕</button>
+                </div>
+            </div>`
+        }).join('');
+
+        document.getElementById('list-mats').innerHTML = renderItemList(state.items.filter(i=>i.cat==='Material'));
+        document.getElementById('list-hw').innerHTML = renderItemList(state.items.filter(i=>i.cat!=='Material'));
+        calcMaxBatch(); if(document.getElementById('chem-available-list')) renderChemList();
+    }
+
+    // --- FORMULATOR & CHART ---
+    let chartInst = null;
+    function addChem(id) { const mat = state.items.find(i=>i.id===id); if(mat && !state.chemistry.find(c=>c.itemId === id)) { state.chemistry.push({ id: genId(), itemId: mat.id, name: mat.name, percent: 0 }); saveState(); renderChemList(); } }
+    function handleSlider(id, val) {
+        val = parseFloat(val) || 0; let c = state.chemistry.find(x => x.id === id);
+        let others = state.chemistry.filter(x => x.id !== id).reduce((sum, x) => sum + x.percent, 0);
+        if (others + val > 100) val = 100 - others;
+        c.percent = val; document.getElementById(`range-${id}`).value = val; document.getElementById(`num-${id}`).value = val;
+        saveState(); updateChemVisuals();
+    }
+    function delChem(id) { state.chemistry = state.chemistry.filter(c=>c.id!==id); saveState(); renderChemList(); }
+
+    function renderChemList() {
+        document.getElementById('chem-sliders').innerHTML = state.chemistry.map(c => `
+            <div class="slider-row">
+                <span style="flex: 1; font-weight: 500; font-size: 0.95rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${c.name}">${c.name}</span>
+                <input type="range" min="0" max="100" step="0.5" value="${c.percent}" style="flex: 1.5;" oninput="handleSlider('${c.id}', this.value)" id="range-${c.id}">
+                <div class="percent-input-wrapper">
+                    <input type="number" min="0" max="100" step="0.5" value="${c.percent}" oninput="handleSlider('${c.id}', this.value)" id="num-${c.id}">
+                    <span style="color: var(--text-secondary); margin-left: 4px;">%</span>
+                </div>
+                <button class="icon-btn" style="border:none; color:var(--danger); padding:4px;" onclick="delChem('${c.id}')">✕</button>
+            </div>
+        `).join('');
+        
+        const availableMats = state.items.filter(i => i.cat === 'Material' && !state.chemistry.find(c => c.itemId === i.id));
+        document.getElementById('chem-available-list').innerHTML = availableMats.map(m => `<button class="icon-btn" style="padding: 8px 16px; background: rgba(255,255,255,0.03);" onclick="addChem('${m.id}')">+ ${m.name}</button>`).join('');
+        
+        const ctx = document.getElementById('chemChart').getContext('2d'); if(chartInst) chartInst.destroy();
+        Chart.defaults.color = '#888899'; Chart.defaults.font.family = 'Inter';
+        chartInst = new Chart(ctx, { type: 'doughnut', data: { labels: state.chemistry.map(c=>c.name), datasets: [{ data: state.chemistry.map(c=>c.percent), backgroundColor: ['#ffffff', '#aaaaaa', '#666666', '#333333', '#111111'], borderColor: '#19191c', borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } } });
+        updateChemVisuals();
+    }
+
+    function updateChemVisuals() {
+        let total = state.chemistry.reduce((s, c) => s + c.percent, 0);
+        document.getElementById('chem-total').innerText = total.toFixed(1);
+        document.getElementById('chem-total').style.color = total > 100 ? 'var(--danger)' : '#fff';
+        if(chartInst) { chartInst.data.labels = state.chemistry.map(c=>c.name); chartInst.data.datasets[0].data = state.chemistry.map(c=>c.percent); chartInst.update(); }
+    }
+
+    function saveFormulation() {
+        const name = document.getElementById('form-name').value; const editId = document.getElementById('edit-form-id').value;
+        if(!name) return alert("Please enter a name.");
+        if(state.chemistry.reduce((s, c) => s + c.percent, 0) !== 100) return alert("Formula must total exactly 100%.");
+        const newFormula = JSON.parse(JSON.stringify(state.chemistry));
+        
+        if(editId) { const idx = state.formulations.findIndex(f => f.id === editId); if(idx !== -1) { state.formulations[idx].name = name; state.formulations[idx].img = document.getElementById('form-img').value || state.formulations[idx].img; state.formulations[idx].formula = newFormula; } } 
+        else { state.formulations.push({ id: genId(), name, img: document.getElementById('form-img').value || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200&auto=format&fit=crop', formula: newFormula }); }
+        
+        ['form-name', 'form-img', 'edit-form-id'].forEach(id => document.getElementById(id).value = '');
+        state.chemistry = []; saveState(); renderChemList(); renderDb(); renderFormLibrary();
+    }
+
+    function loadFormulationForEdit(id) {
+        const f = state.formulations.find(x => x.id === id);
+        if(f) { document.getElementById('edit-form-id').value = f.id; document.getElementById('form-name').value = f.name; document.getElementById('form-img').value = f.img; state.chemistry = JSON.parse(JSON.stringify(f.formula)); saveState(); renderChemList(); window.scrollTo({top:0, behavior:'smooth'}); }
+    }
+
+    function renderFormLibrary() {
+        document.getElementById('form-library').innerHTML = state.formulations.map(f => `
+            <div class="list-item" style="display:flex; gap:16px; align-items:center; padding: 16px;">
+                <div style="width:60px; height:60px; flex-shrink:0; background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <img src="${f.img}" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:6px;">
+                </div>
+                <div style="flex:1;">
+                    <strong style="color:#fff; font-size:1.05rem;">${f.name}</strong>
+                    <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px; line-height:1.4;">${f.formula.map(x => `${x.name}: ${x.percent}%`).join(' | ')}</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <button class="icon-btn" onclick="loadFormulationForEdit('${f.id}')">✎ Edit</button>
+                    <button class="icon-btn" style="color:var(--danger); border-color:rgba(255,68,68,0.3);" onclick="delFormulation('${f.id}')">✕</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    function delFormulation(id) { state.formulations = state.formulations.filter(f=>f.id!==id); saveState(); renderFormLibrary(); renderDb(); }
+
+    // --- BATCH ENGINE ---
+    function calcMaxBatch() {
+        const formId = document.getElementById('batch-form-select').value;
+        let maxYield = Infinity; let limitingFactor = "No limits";
+
+        if(formId) {
+            const form = state.formulations.find(f=>f.id===formId);
+            form.formula.forEach(comp => {
+                const item = state.items.find(i=>i.id===comp.itemId);
+                if(item) { let reqPerUnit = comp.percent / 100; let possible = Math.floor((item.stock||0) / reqPerUnit); if(possible < maxYield) { maxYield = possible; limitingFactor = `Limited by ${item.name} stock`; } } 
+                else { maxYield = 0; limitingFactor = "Missing ingredient in stock."; }
+            });
+        } else { maxYield = 0; limitingFactor = "Select formulation."; }
+
+        ['batch-hw-select', 'batch-pkg-select'].forEach(id => { const val = document.getElementById(id).value; if(val) { const item = state.items.find(i=>i.id===val); if(item && (item.stock||0) < maxYield) { maxYield = item.stock; limitingFactor = `Limited by ${item.name} stock`; } } });
+        if(maxYield === Infinity) maxYield = 0;
+        document.getElementById('batch-max-yield').innerText = `${maxYield} units`; document.getElementById('batch-limiting-factor').innerText = limitingFactor; updateBatchProjection();
+    }
+
+    function updateBatchProjection() {
+        const target = parseFloat(document.getElementById('batch-target-yield').value) || 0;
+        const formId = document.getElementById('batch-form-select').value;
+        
+        let supplierSpent = {}; let breakdownHTML = `<strong style="color:#fff; font-weight:500;">Required Materials for ${target} units:</strong><br><br>`;
+        let matCostEur = 0, hwCostEur = 0; let receipt = [];
+
+        const processItem = (itemId, qtyRequired, isHw) => {
+            const item = state.items.find(i=>i.id===itemId);
+            if(item) {
+                let nativeCost = qtyRequired * ((item.pkgCost||0) / (item.pkgQty||1));
+                supplierSpent[item.supId] = (supplierSpent[item.supId] || 0) + nativeCost;
+                let eurCost = getCostInEur(nativeCost, item.supId);
+                isHw ? hwCostEur += eurCost : matCostEur += eurCost;
+                receipt.push({ itemId: item.id, name: item.name, qty: qtyRequired, unit: item.unit, cost: eurCost });
+                if(!isHw) breakdownHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid var(--glass-border);"><span>${qtyRequired.toFixed(1)}${item.unit} of ${item.name}</span><span>${fmt(eurCost)}</span></div>`;
+            }
+        };
+
+        if(formId && target > 0) { state.formulations.find(f=>f.id===formId).formula.forEach(comp => processItem(comp.itemId, target * (comp.percent/100), false)); } 
+        else breakdownHTML = "Select template and set yield.";
+
+        if(target > 0) {
+            const hwId = document.getElementById('batch-hw-select').value; const pkgId = document.getElementById('batch-pkg-select').value;
+            if(hwId) processItem(hwId, target, true); if(pkgId) processItem(pkgId, target, true);
+        }
+
+        let totalShippingEur = 0;
+        for(let supId in supplierSpent) { const sup = state.suppliers.find(s=>s.id===supId); if(sup && sup.ship > 0) { if(!sup.hasFreeShip || supplierSpent[supId] < sup.thresh) totalShippingEur += getCostInEur(sup.ship, sup.id); } }
+
+        document.getElementById('batch-mix-breakdown').innerHTML = breakdownHTML;
+        let totalCost = matCostEur + hwCostEur + totalShippingEur;
+        let rev = target * (parseFloat(document.getElementById('batch-retail').value) || 0);
+        
+        document.getElementById('calc-cost').innerText = fmt(totalCost); document.getElementById('calc-rev').innerText = fmt(rev); document.getElementById('calc-profit').innerText = fmt(rev - totalCost);
+        return { matCost: matCostEur, hwCost: hwCostEur, shippingCost: totalShippingEur, cost: totalCost, revenue: rev, profit: rev - totalCost, receipt };
+    }
+
+    function finalizeBatch() {
+        const target = parseFloat(document.getElementById('batch-target-yield').value) || 0;
+        const formId = document.getElementById('batch-form-select').value;
+        if(target <= 0) return alert("Set a yield target.");
+        if(target > parseInt(document.getElementById('batch-max-yield').innerText)) return alert("Not enough stock!");
+        if(!formId) return alert("Select a formulation.");
+
+        const projection = updateBatchProjection();
+        const deductions = [];
+        const form = state.formulations.find(f=>f.id===formId);
+
+        form.formula.forEach(comp => { const item = state.items.find(i=>i.id===comp.itemId); let req = target * (comp.percent / 100); item.stock -= req; deductions.push({ itemId: item.id, qty: req }); });
+        ['batch-hw-select', 'batch-pkg-select'].forEach(id => { const val = document.getElementById(id).value; if(val) { const item = state.items.find(i=>i.id===val); item.stock -= target; deductions.push({ itemId: item.id, qty: target }); } });
+
+        state.batches.push({ id: genId(), formId, formName: form.name, yieldQty: target, hwId: document.getElementById('batch-hw-select').value, pkgId: document.getElementById('batch-pkg-select').value, retail: parseFloat(document.getElementById('batch-retail').value) || 0, deductions, sales: [], ...projection });
+        document.getElementById('batch-target-yield').value = ''; document.getElementById('batch-retail').value = '';
+        saveState(); renderDb(); renderOverview(); switchTab('overview');
+    }
+
+    initCurrency(); renderChemList(); renderFormLibrary(); renderOverview();
+</script>
+</body>
+</html>
