@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="OT Dash">
     <meta name="theme-color" content="#030303">
 
-    <title>OT Dashboard</title>
+    <title>RH Business Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
@@ -280,10 +280,8 @@
         .language-option { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border-radius: 12px; background: transparent; border: 1px solid transparent; color: var(--text-primary); justify-content: flex-start; }
         .language-option:hover, .language-option.active { background: rgba(255,255,255,0.08); border-color: var(--glass-border); transform: none; box-shadow: none; }
 
-        .cloud-saving { color: var(--warning) !important; border-color: rgba(255,209,102,0.35) !important; }
-        .cloud-synced { color: var(--success) !important; border-color: rgba(51,255,153,0.35) !important; }
-        .cloud-offline { color: var(--warning) !important; border-color: rgba(255,209,102,0.35) !important; }
-        .cloud-error { color: var(--danger) !important; border-color: rgba(255,68,68,0.35) !important; }
+        .cloud-synced { color: var(--success) !important; border-color: rgba(51,255,153,0.35) !important; background: rgba(51,255,153,0.08) !important; }
+        .cloud-saving, .cloud-offline, .cloud-error { color: var(--danger) !important; border-color: rgba(255,68,68,0.46) !important; background: rgba(255,68,68,0.08) !important; }
 
         .mobile-icon { display: grid; place-items: center; width: 22px; height: 22px; }
         .mobile-icon svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
@@ -391,6 +389,66 @@
             .data-safety-panel.mobile-collapsed .help-text { display: none !important; }
         }
 
+
+
+        /* v2.5 plain replaceable logo and mobile header spacing */
+        .logo-shell {
+            width: 48px !important;
+            height: 48px !important;
+            flex: 0 0 48px !important;
+            padding: 0 !important;
+            margin: 0;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            display: inline-grid !important;
+            place-items: center !important;
+            color: var(--text-primary);
+            overflow: visible;
+        }
+        .auth-mark.logo-shell { margin-bottom: 22px !important; }
+        button.logo-shell { cursor: pointer; }
+        button.logo-shell:hover, button.logo-shell:focus-visible {
+            background: transparent !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+        button.logo-shell:hover .placeholder-logo { opacity: 0.82; }
+        .placeholder-logo { width: 100%; height: 100%; display: block; overflow: visible; }
+        .placeholder-logo .logo-ring {
+            fill: none;
+            stroke: rgba(255,255,255,0.9);
+            stroke-width: 3.2;
+        }
+        .placeholder-logo .logo-mark {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        @media (max-width: 768px) {
+            header.app-header {
+                margin-top: 68px !important;
+                margin-bottom: 30px !important;
+                padding-bottom: 22px !important;
+            }
+            .app-title-row {
+                display: block !important;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+            .app-mark.logo-shell {
+                width: 72px !important;
+                height: 72px !important;
+                flex-basis: 72px !important;
+                margin: 0 0 30px 0 !important;
+            }
+            .app-header .brand-copy { display: block; }
+            .app-header .brand-eyebrow { margin-top: 0 !important; }
+        }
+
     </style>
 </head>
 <body class="auth-locked">
@@ -401,7 +459,12 @@
 
 <div id="auth-screen" class="auth-screen" role="dialog" aria-modal="true" aria-labelledby="auth-title">
     <div class="auth-card">
-        <div class="auth-mark" aria-hidden="true">OT</div>
+        <div class="auth-mark logo-shell" aria-hidden="true">
+                <svg class="placeholder-logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                    <circle class="logo-ring" cx="32" cy="32" r="24"></circle>
+                    <path class="logo-mark" d="M20 37.5 29 23l15 22H24.5l6.5-8.5 4 5.5"></path>
+                </svg>
+        </div>
         <h1 id="auth-title" data-i18n="authTitle">Unlock OT Dashboard</h1>
         <p data-i18n="authSubtitle">Sign in with one of the authorized dashboard accounts. Both accounts open the same shared stock, formula, batch, and sales workspace.</p>
         <div id="auth-setup-warning" class="auth-setup">
@@ -479,7 +542,12 @@
 <div class="container">
     <header class="app-header">
         <div class="app-title-row">
-            <div class="app-mark" aria-hidden="true">OT</div>
+            <button class="app-mark logo-shell logo-link" type="button" onclick="switchTab('overview')" aria-label="Go to overview">
+                <svg class="placeholder-logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                    <circle class="logo-ring" cx="32" cy="32" r="24"></circle>
+                    <path class="logo-mark" d="M20 37.5 29 23l15 22H24.5l6.5-8.5 4 5.5"></path>
+                </svg>
+            </button>
             <div class="brand-copy">
                 <div class="brand-eyebrow" data-i18n="operationsTracker">Operations Tracker</div>
                 <h1 data-i18n="appTitle">OT Dashboard</h1>
@@ -490,7 +558,7 @@
             <span class="badge success" data-i18n="versionBadge">v2.3 GitHub-ready</span>
             <span class="badge" data-i18n="ledgerBadge">Inventory + batch ledger</span>
             <span class="badge" id="exchange-rate-display">Fetching live rates...</span>
-            <span class="badge cloud-offline" id="cloud-status-display">Cloud not connected</span>
+            <span class="badge cloud-offline" id="cloud-status-display">Not connected</span>
         </div>
     </header>
 
@@ -800,7 +868,7 @@
             cancel: 'Cancel', confirm: 'Confirm', importBackupTitle: 'Import Backup', importBackupMessage: 'This will replace the current dashboard data. A local fallback backup of the current state will be saved before importing.', import: 'Import', archive: 'Archive', restore: 'Restore', edit: 'Edit', active: 'Active', archived: 'Archived', noBatches: 'No active batches yet.', noStockMovements: 'No stock movements yet.', noTemplates: 'No saved templates yet.', noSuppliers: 'No suppliers yet.', noItems: 'No items yet.',
             yield: 'Yield', fill: 'Fill', perUnit: 'per unit', realizedSales: 'Realized Sales', voided: 'Voided', quantity: 'Qty', noReceiptStored: 'No cost receipt stored for this batch.', removeSalesHelp: 'Batches with logged sales cannot be voided because stock would no longer match sales history.', sold: 'sold', made: 'made', units: 'units', stock: 'Stock', pkg: 'Pkg', for: 'for', visitSite: 'Visit Site', freeShip: 'Free ship', requiredMaterialsFor: 'Required materials for', selectTemplateSetYield: 'Select template and set yield.', targetExceedsStock: 'Target exceeds available stock.', noLimits: 'No limits', selectFormulation: 'Select formulation.', selectTemplate: '-- Select Template --', none: '-- None --', limitedBy: 'Limited by', missingIngredient: 'Missing ingredient in stock.', stockLimit: 'stock',
             totalCostLabel: 'Total Cost', cashNet: 'Cash Net', remaining: 'Remaining', costBreakdown: 'Cost Breakdown', shippingAdjustments: 'Shipping Adjustments', salesLedger: 'Sales Ledger', logsFor: 'Logs for', noSalesLogged: 'No sales logged.', log: 'Log', editBatch: 'Edit Batch', voidRefund: 'Void & Refund', close: 'Close',
-            cloudNotConnected: 'Cloud not connected', cloudSynced: 'Cloud synced', cloudSaving: 'Saving...', cloudSyncing: 'Syncing cloud...', cloudCreating: 'Creating cloud state...', cloudSyncError: 'Cloud sync error', cloudConfigError: 'Cloud config error', cloudSaveFailed: 'Cloud save failed', signedOut: 'Signed out', localTestMode: 'Local test mode', cloudConnected: 'Cloud connected', localOnly: 'Local only', authSetupNeeded: 'Backend setup needed before publishing.', authEnterLogin: 'Enter your dashboard login.', authAddFirebase: 'Add Firebase config to enable secure login and shared cloud data. Local-only mode is only for testing before publish.', authSignedInSyncing: 'Signed in. Syncing shared dashboard data...', authFirebaseInitError: 'Firebase could not initialize. Check FIREBASE_CONFIG values.', authFirebaseMissing: 'Firebase is not configured yet.', authEmailPasswordRequired: 'Email and password are required.', authCheckingPassword: 'Checking password...', authLoginFailed: 'Login failed.', authLocalClosed: 'Local test mode closed.', authCouldNotReadCloud: 'Could not read cloud data. Check Firestore rules.', msgCloudSaveFailed: 'Cloud save failed. Check connection/rules.', fetchingRates: 'Fetching live rates...', fallbackRate: 'Fallback: 1 USD = 0.920 EUR', liveRate: '1 USD = {rate} EUR',
+            cloudNotConnected: 'Not connected', cloudSynced: 'Cloud synced', cloudSaving: 'Saving...', cloudSyncing: 'Syncing cloud...', cloudCreating: 'Creating cloud state...', cloudSyncError: 'Cloud sync error', cloudConfigError: 'Cloud config error', cloudSaveFailed: 'Cloud save failed', signedOut: 'Signed out', localTestMode: 'Local test mode', cloudConnected: 'Cloud connected', localOnly: 'Local only', authSetupNeeded: 'Backend setup needed before publishing.', authEnterLogin: 'Enter your dashboard login.', authAddFirebase: 'Add Firebase config to enable secure login and shared cloud data. Local-only mode is only for testing before publish.', authSignedInSyncing: 'Signed in. Syncing shared dashboard data...', authFirebaseInitError: 'Firebase could not initialize. Check FIREBASE_CONFIG values.', authFirebaseMissing: 'Firebase is not configured yet.', authEmailPasswordRequired: 'Email and password are required.', authCheckingPassword: 'Checking password...', authLoginFailed: 'Login failed.', authLocalClosed: 'Local test mode closed.', authCouldNotReadCloud: 'Could not read cloud data. Check Firestore rules.', msgCloudSaveFailed: 'Cloud save failed. Check connection/rules.', fetchingRates: 'Fetching live rates...', fallbackRate: 'Fallback: 1 USD = 0.920 EUR', liveRate: '1 USD = {rate} EUR',
             msgCorrupt: 'Stored data was corrupted, so a fresh state was loaded. If possible, a raw backup was kept in localStorage.', msgCouldNotSave: 'Could not save. Browser storage may be full.', msgSignOutFailed: 'Sign out failed. Please reload the page.', msgLocalOnly: 'Local-only mode is active. Configure Firebase before publishing to GitHub Pages.', msgCloudSaved: 'Cloud saved.', msgBatchInactive: 'This batch is not active.', msgValidQty: 'Enter a valid whole quantity.', msgSellTooMany: 'You cannot sell more than the remaining batch quantity.', msgSaleLogged: 'Sale logged.', msgSaleRemoved: 'Sale removed.', msgEditCancelled: 'Edit cancelled. The original batch was not changed.', msgRemoveSalesBeforeVoid: 'Remove logged sales before voiding this batch.', msgBatchVoided: 'Batch voided and stock refunded.', msgBatchVoidedConfirm: 'This will archive the batch and return all deducted materials, hardware, and packaging to stock. The batch record remains in backup history.', msgSupplierRequired: 'Supplier name is required.', msgSupplierUrl: 'Supplier URL must start with http:// or https://.', msgSupplierSaved: 'Supplier saved.', msgAddSupplierFirst: 'Add an active supplier first or select one.', msgSelectActiveSupplier: 'Select an active supplier.', msgItemRequired: 'Item name is required.', msgPkgGreaterZero: 'Package amount must be greater than zero.', msgItemSaved: 'Item saved.', msgArchiveSupplierRefs: 'Archive or reassign active items from this supplier first.', msgSupplierArchived: 'Supplier archived.', msgSupplierRestored: 'Supplier restored.', msgArchiveItemFormula: 'Archive or edit formulations that use this item first.', msgItemArchived: 'Item archived.', msgArchiveItemWithStock: 'This item still has stock. Archive anyway? History remains in backups and movements.', msgRestoreSupplierFirst: 'Restore the supplier first or reassign it.', msgItemRestored: 'Item restored.', msgFormulaName: 'Please enter a formulation name.', msgFormulaTotal: 'Formula must total 100%. Current total: {total}%.', msgAddMaterial: 'Add at least one material.', msgMissingFormulaItem: 'Formula contains a missing or archived item: {name}', msgImageUrl: 'Image URL must start with http:// or https://.', msgCannotEditArchivedFormula: 'An archived or missing formulation cannot be edited.', msgFormSaved: 'Formulation saved.', msgFormArchived: 'Formulation archived.', msgRestoreFormulaItem: 'Restore or replace missing formula item before restoring: {name}', msgFormRestored: 'Formulation restored.', msgSelectFormula: 'Select a formulation.', msgArchivedFormula: 'Selected formulation is archived.', msgWholeYield: 'Set a whole-number target yield.', msgFillGreaterZero: 'Fill amount must be greater than zero.', msgNotEnoughStock: 'Not enough stock for this target yield.', msgFixMissing: 'Fix missing or archived items before finalizing.', msgRecalcStock: 'Not enough stock after recalculation.', msgOriginalMissing: 'Original batch not found.', msgYieldLowerSold: 'New yield cannot be lower than already sold units ({units}).', msgEditDeductFailed: 'Stock deduction failed while saving the edit.', msgBatchUpdated: 'Batch safely updated.', msgDeductFailed: 'Stock deduction failed.', msgBatchFinalized: 'Batch finalized and stock deducted.', msgBackupExported: 'Backup exported.', msgBackupImported: 'Backup imported.', msgImportFailed: 'Import failed. The file is not valid JSON.'
         },
         de: {
@@ -814,7 +882,7 @@
             cancel: 'Abbrechen', confirm: 'Bestätigen', importBackupTitle: 'Backup importieren', importBackupMessage: 'Dies ersetzt die aktuellen Dashboard-Daten. Vor dem Import wird ein lokales Fallback-Backup des aktuellen Zustands gespeichert.', import: 'Importieren', archive: 'Archivieren', restore: 'Wiederherstellen', edit: 'Bearbeiten', active: 'Aktiv', archived: 'Archiviert', noBatches: 'Noch keine aktiven Chargen.', noStockMovements: 'Noch keine Lagerbewegungen.', noTemplates: 'Noch keine gespeicherten Vorlagen.', noSuppliers: 'Noch keine Lieferanten.', noItems: 'Noch keine Artikel.',
             yield: 'Menge', fill: 'Füllung', perUnit: 'pro Einheit', realizedSales: 'Realisierte Verkäufe', voided: 'Storniert', quantity: 'Menge', noReceiptStored: 'Für diese Charge ist kein Kostenbeleg gespeichert.', removeSalesHelp: 'Chargen mit erfassten Verkäufen können nicht storniert werden, weil der Bestand sonst nicht mehr zur Verkaufshistorie passt.', sold: 'verkauft', made: 'produziert', units: 'Einheiten', stock: 'Bestand', pkg: 'Pkg', for: 'für', visitSite: 'Website öffnen', freeShip: 'Kostenloser Versand', requiredMaterialsFor: 'Benötigte Materialien für', selectTemplateSetYield: 'Vorlage auswählen und Menge festlegen.', targetExceedsStock: 'Ziel überschreitet verfügbaren Bestand.', noLimits: 'Keine Limits', selectFormulation: 'Rezeptur auswählen.', selectTemplate: '-- Vorlage auswählen --', none: '-- Keine --', limitedBy: 'Limitiert durch', missingIngredient: 'Fehlende Zutat im Lager.', stockLimit: 'Bestand',
             totalCostLabel: 'Gesamtkosten', cashNet: 'Cash-Netto', remaining: 'Verbleibend', costBreakdown: 'Kostenaufschlüsselung', shippingAdjustments: 'Versandanpassungen', salesLedger: 'Verkaufsbuch', logsFor: 'Einträge für', noSalesLogged: 'Keine Verkäufe erfasst.', log: 'Eintragen', editBatch: 'Charge bearbeiten', voidRefund: 'Stornieren & erstatten', close: 'Schließen',
-            cloudNotConnected: 'Cloud nicht verbunden', cloudSynced: 'Cloud synchronisiert', cloudSaving: 'Speichern...', cloudSyncing: 'Cloud wird synchronisiert...', cloudCreating: 'Cloud-Zustand wird erstellt...', cloudSyncError: 'Cloud-Sync-Fehler', cloudConfigError: 'Cloud-Konfigurationsfehler', cloudSaveFailed: 'Cloud-Speichern fehlgeschlagen', signedOut: 'Abgemeldet', localTestMode: 'Lokaler Testmodus', cloudConnected: 'Cloud verbunden', localOnly: 'Nur lokal', authSetupNeeded: 'Backend-Einrichtung vor Veröffentlichung nötig.', authEnterLogin: 'Gib deine Dashboard-Zugangsdaten ein.', authAddFirebase: 'Füge die Firebase-Konfiguration hinzu, um sicheren Login und geteilte Cloud-Daten zu aktivieren. Der lokale Modus ist nur zum Testen vor dem Veröffentlichen.', authSignedInSyncing: 'Angemeldet. Geteilte Dashboard-Daten werden synchronisiert...', authFirebaseInitError: 'Firebase konnte nicht initialisiert werden. Prüfe die FIREBASE_CONFIG-Werte.', authFirebaseMissing: 'Firebase ist noch nicht konfiguriert.', authEmailPasswordRequired: 'E-Mail und Passwort sind erforderlich.', authCheckingPassword: 'Passwort wird geprüft...', authLoginFailed: 'Login fehlgeschlagen.', authLocalClosed: 'Lokaler Testmodus geschlossen.', authCouldNotReadCloud: 'Cloud-Daten konnten nicht gelesen werden. Prüfe die Firestore-Regeln.', msgCloudSaveFailed: 'Cloud-Speichern fehlgeschlagen. Prüfe Verbindung/Regeln.', fetchingRates: 'Live-Kurse werden geladen...', fallbackRate: 'Fallback: 1 USD = 0.920 EUR', liveRate: '1 USD = {rate} EUR',
+            cloudNotConnected: 'Nicht verbunden', cloudSynced: 'Cloud synchronisiert', cloudSaving: 'Speichern...', cloudSyncing: 'Cloud wird synchronisiert...', cloudCreating: 'Cloud-Zustand wird erstellt...', cloudSyncError: 'Cloud-Sync-Fehler', cloudConfigError: 'Cloud-Konfigurationsfehler', cloudSaveFailed: 'Cloud-Speichern fehlgeschlagen', signedOut: 'Abgemeldet', localTestMode: 'Lokaler Testmodus', cloudConnected: 'Cloud verbunden', localOnly: 'Nur lokal', authSetupNeeded: 'Backend-Einrichtung vor Veröffentlichung nötig.', authEnterLogin: 'Gib deine Dashboard-Zugangsdaten ein.', authAddFirebase: 'Füge die Firebase-Konfiguration hinzu, um sicheren Login und geteilte Cloud-Daten zu aktivieren. Der lokale Modus ist nur zum Testen vor dem Veröffentlichen.', authSignedInSyncing: 'Angemeldet. Geteilte Dashboard-Daten werden synchronisiert...', authFirebaseInitError: 'Firebase konnte nicht initialisiert werden. Prüfe die FIREBASE_CONFIG-Werte.', authFirebaseMissing: 'Firebase ist noch nicht konfiguriert.', authEmailPasswordRequired: 'E-Mail und Passwort sind erforderlich.', authCheckingPassword: 'Passwort wird geprüft...', authLoginFailed: 'Login fehlgeschlagen.', authLocalClosed: 'Lokaler Testmodus geschlossen.', authCouldNotReadCloud: 'Cloud-Daten konnten nicht gelesen werden. Prüfe die Firestore-Regeln.', msgCloudSaveFailed: 'Cloud-Speichern fehlgeschlagen. Prüfe Verbindung/Regeln.', fetchingRates: 'Live-Kurse werden geladen...', fallbackRate: 'Fallback: 1 USD = 0.920 EUR', liveRate: '1 USD = {rate} EUR',
             msgCorrupt: 'Gespeicherte Daten waren beschädigt, daher wurde ein frischer Zustand geladen. Wenn möglich wurde ein Roh-Backup in localStorage behalten.', msgCouldNotSave: 'Konnte nicht speichern. Der Browserspeicher ist möglicherweise voll.', msgSignOutFailed: 'Abmelden fehlgeschlagen. Bitte Seite neu laden.', msgLocalOnly: 'Nur lokal aktiv. Konfiguriere Firebase vor der Veröffentlichung auf GitHub Pages.', msgCloudSaved: 'Cloud gespeichert.', msgBatchInactive: 'Diese Charge ist nicht aktiv.', msgValidQty: 'Gib eine gültige ganzzahlige Menge ein.', msgSellTooMany: 'Du kannst nicht mehr als die verbleibende Chargenmenge verkaufen.', msgSaleLogged: 'Verkauf erfasst.', msgSaleRemoved: 'Verkauf entfernt.', msgEditCancelled: 'Bearbeitung abgebrochen. Die ursprüngliche Charge wurde nicht verändert.', msgRemoveSalesBeforeVoid: 'Entferne erfasste Verkäufe, bevor du diese Charge stornierst.', msgBatchVoided: 'Charge storniert und Bestand erstattet.', msgBatchVoidedConfirm: 'Dies archiviert die Charge und gibt alle abgezogenen Materialien, Hardware und Verpackungen zurück ins Lager. Der Chargeneintrag bleibt für die Backup-Historie erhalten.', msgSupplierRequired: 'Lieferantenname ist erforderlich.', msgSupplierUrl: 'Lieferanten-URL muss mit http:// oder https:// beginnen.', msgSupplierSaved: 'Lieferant gespeichert.', msgAddSupplierFirst: 'Füge zuerst einen aktiven Lieferanten hinzu oder wähle einen aus.', msgSelectActiveSupplier: 'Wähle einen aktiven Lieferanten.', msgItemRequired: 'Artikelname ist erforderlich.', msgPkgGreaterZero: 'Packungsmenge muss größer als null sein.', msgItemSaved: 'Artikel gespeichert.', msgArchiveSupplierRefs: 'Archiviere oder weise aktive Artikel dieses Lieferanten zuerst neu zu.', msgSupplierArchived: 'Lieferant archiviert.', msgSupplierRestored: 'Lieferant wiederhergestellt.', msgArchiveItemFormula: 'Archiviere oder bearbeite Rezepturen, die diesen Artikel verwenden, zuerst.', msgItemArchived: 'Artikel archiviert.', msgArchiveItemWithStock: 'Dieser Artikel hat noch Bestand. Trotzdem archivieren? Verlauf bleibt in Backups und Bewegungen erhalten.', msgRestoreSupplierFirst: 'Stelle zuerst den Lieferanten wieder her oder weise ihn neu zu.', msgItemRestored: 'Artikel wiederhergestellt.', msgFormulaName: 'Bitte gib einen Rezepturnamen ein.', msgFormulaTotal: 'Rezeptur muss 100 % ergeben. Aktuell: {total} %.', msgAddMaterial: 'Füge mindestens ein Material hinzu.', msgMissingFormulaItem: 'Rezeptur enthält einen fehlenden oder archivierten Artikel: {name}', msgImageUrl: 'Bild-URL muss mit http:// oder https:// beginnen.', msgCannotEditArchivedFormula: 'Eine archivierte oder fehlende Rezeptur kann nicht bearbeitet werden.', msgFormSaved: 'Rezeptur gespeichert.', msgFormArchived: 'Rezeptur archiviert.', msgRestoreFormulaItem: 'Fehlenden Rezepturartikel vor dem Wiederherstellen ersetzen oder wiederherstellen: {name}', msgFormRestored: 'Rezeptur wiederhergestellt.', msgSelectFormula: 'Wähle eine Rezeptur.', msgArchivedFormula: 'Ausgewählte Rezeptur ist archiviert.', msgWholeYield: 'Lege eine ganzzahlige Zielmenge fest.', msgFillGreaterZero: 'Füllmenge muss größer als null sein.', msgNotEnoughStock: 'Nicht genug Bestand für diese Zielmenge.', msgFixMissing: 'Behebe fehlende oder archivierte Artikel vor dem Finalisieren.', msgRecalcStock: 'Nach Neuberechnung nicht genug Bestand.', msgOriginalMissing: 'Ursprüngliche Charge nicht gefunden.', msgYieldLowerSold: 'Neue Menge darf nicht niedriger sein als bereits verkaufte Einheiten ({units}).', msgEditDeductFailed: 'Lagerabzug beim Speichern der Bearbeitung fehlgeschlagen.', msgBatchUpdated: 'Charge sicher aktualisiert.', msgDeductFailed: 'Lagerabzug fehlgeschlagen.', msgBatchFinalized: 'Charge finalisiert und Bestand abgezogen.', msgBackupExported: 'Backup exportiert.', msgBackupImported: 'Backup importiert.', msgImportFailed: 'Import fehlgeschlagen. Datei ist kein gültiges JSON.'
         }
     };
@@ -1222,17 +1290,19 @@
         }
     }
     function updateCloudStatus(statusKey, type) {
-        cloudStatusKey = statusKey || 'cloudNotConnected';
-        cloudStatusType = type || 'warning';
+        const isSynced = type === 'success' || statusKey === 'cloudSynced';
+        cloudStatusKey = isSynced ? 'cloudSynced' : 'cloudNotConnected';
+        cloudStatusType = isSynced ? 'success' : 'danger';
         refreshCloudStatusText();
         const el = $('cloud-status-display');
         if (!el) return;
-        el.className = 'badge ' + (cloudStatusType === 'success' ? 'cloud-synced' : cloudStatusType === 'saving' ? 'cloud-saving' : cloudStatusType === 'danger' ? 'cloud-error' : 'cloud-offline');
+        el.className = 'badge ' + (isSynced ? 'cloud-synced' : 'cloud-error');
     }
     function refreshCloudStatusText() {
         const el = $('cloud-status-display');
         if (!el) return;
-        el.textContent = t(cloudStatusKey || 'cloudNotConnected');
+        const displayKey = (cloudStatusType === 'success' || cloudStatusType === 'saving') ? (cloudStatusKey || 'cloudNotConnected') : 'cloudNotConnected';
+        el.textContent = t(displayKey);
     }
     function initAuthGate() {
         updateCloudStatus('cloudNotConnected', 'warning');
