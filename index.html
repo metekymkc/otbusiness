@@ -453,7 +453,7 @@
         /* Header title custom font: keep this outside media queries and near the end so it wins the cascade. */
         @font-face {
             font-family: 'HeaderFont';
-            src: url('./assets/ARCADECLASSIC.TTF') format('truetype');
+            src: url('./assets/ARCADECLASSIC.TTF?v=1') format('truetype');
             font-weight: 400;
             font-style: normal;
             font-display: swap;
@@ -461,12 +461,353 @@
 
         header.app-header h1[data-i18n="appTitle"],
         .app-header .brand-copy h1[data-i18n="appTitle"],
-        h1[data-i18n="appTitle"],
-        #auth-title {
+        h1[data-i18n="appTitle"] {
             font-family: 'HeaderFont', sans-serif !important;
             font-weight: 400 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.05em !important;
+        }
+
+
+        /* v2.7 theme toggle and polished light mode. UI-only: no data/cloud logic changes. */
+        .theme-toggle-btn { display: inline-flex; align-items: center; gap: 8px; }
+        .theme-icon { width: 18px; height: 18px; display: inline-grid; place-items: center; flex: 0 0 18px; }
+        .theme-icon svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .theme-icon-moon { display: none; }
+        body.light-mode .theme-icon-sun { display: none; }
+        body.light-mode .theme-icon-moon { display: inline-grid; }
+
+        /* Login title should use the normal interface font, not the arcade header font. */
+        #auth-title {
+            font-family: var(--font) !important;
+            text-transform: none !important;
+            letter-spacing: -0.06em !important;
+            font-weight: 700 !important;
+        }
+
+        body.light-mode {
+            --bg-base: #f4f1ea;
+            --glass-bg: rgba(255, 255, 255, 0.76);
+            --glass-border: rgba(31, 41, 55, 0.13);
+            --text-primary: #151922;
+            --text-secondary: #667085;
+            --accent: #245ee8;
+            --danger: #d92d20;
+            --success: #087f5b;
+            --warning: #a16207;
+            --glow: 0 18px 42px rgba(31, 41, 55, 0.10), inset 0 1px 0 rgba(255,255,255,0.82);
+            background:
+                radial-gradient(circle at 10% -10%, rgba(59, 130, 246, 0.13), transparent 34%),
+                radial-gradient(circle at 98% 3%, rgba(20, 184, 166, 0.10), transparent 28%),
+                linear-gradient(180deg, #f8f5ee 0%, #eef2f7 100%) !important;
+            color: var(--text-primary);
+        }
+        body.light-mode .ambient-light { opacity: 0.18; }
+        body.light-mode .light-1 { background: #9ec5ff; }
+        body.light-mode .light-2 { background: #b9f6df; }
+
+        body.light-mode .auth-screen {
+            background:
+                radial-gradient(circle at top left, rgba(36,94,232,0.12), transparent 32%),
+                linear-gradient(180deg, rgba(248,245,238,0.98), rgba(238,242,247,0.98)) !important;
+        }
+        body.light-mode .auth-card,
+        body.light-mode .modal-box,
+        body.light-mode .panel,
+        body.light-mode .tabs,
+        body.light-mode .mobile-bottom-nav,
+        body.light-mode .nav-bag-menu,
+        body.light-mode .language-menu {
+            background: rgba(255,255,255,0.78) !important;
+            border-color: var(--glass-border) !important;
+            box-shadow: var(--glow) !important;
+        }
+        body.light-mode .top-nav .nav-bag-toggle {
+            background: rgba(255,255,255,0.86) !important;
+            border-color: var(--glass-border) !important;
+            box-shadow: 0 10px 26px rgba(31,41,55,0.12) !important;
+        }
+        body.light-mode .modal-overlay {
+            background: rgba(232, 236, 244, 0.78) !important;
+        }
+
+        body.light-mode input,
+        body.light-mode select,
+        body.light-mode .percent-input-wrapper,
+        body.light-mode .input-wrapper input {
+            background: rgba(255,255,255,0.88) !important;
+            color: var(--text-primary) !important;
+            border-color: rgba(31,41,55,0.15) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+        }
+        body.light-mode input:focus,
+        body.light-mode select:focus {
+            background: #ffffff !important;
+            border-color: rgba(36,94,232,0.36) !important;
+            box-shadow: 0 0 0 4px rgba(36,94,232,0.10) !important;
+        }
+        body.light-mode input::placeholder { color: #9aa3af; }
+        body.light-mode option { background: #ffffff; color: var(--text-primary); }
+
+        body.light-mode button,
+        body.light-mode .nav-btn,
+        body.light-mode .icon-btn,
+        body.light-mode .tab-btn,
+        body.light-mode .mobile-btn,
+        body.light-mode .language-option {
+            color: var(--text-primary);
+            border-color: var(--glass-border);
+        }
+        body.light-mode button:hover,
+        body.light-mode .nav-btn:hover,
+        body.light-mode .icon-btn:hover,
+        body.light-mode .tab-btn:hover,
+        body.light-mode .language-option:hover {
+            background: rgba(31,41,55,0.07) !important;
+            box-shadow: 0 8px 20px rgba(31,41,55,0.08);
+        }
+        body.light-mode .tab-btn.active,
+        body.light-mode .mobile-btn.active,
+        body.light-mode .language-option.active,
+        body.light-mode .mobile-language-option.active {
+            background: rgba(36,94,232,0.10) !important;
+            color: var(--accent) !important;
+            border-color: rgba(36,94,232,0.24) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.86), 0 6px 18px rgba(36,94,232,0.08) !important;
+        }
+        body.light-mode .nav-btn.accent-ui {
+            background: rgba(36,94,232,0.10) !important;
+            color: var(--accent) !important;
+            border-color: rgba(36,94,232,0.24) !important;
+            animation: none !important;
+        }
+
+        body.light-mode .list-item,
+        body.light-mode .batch-card,
+        body.light-mode .slider-row,
+        body.light-mode .cal-day,
+        body.light-mode #sup-form,
+        body.light-mode #item-form {
+            background: rgba(255,255,255,0.62) !important;
+            border-color: rgba(31,41,55,0.12) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+        }
+        body.light-mode .list-item:hover,
+        body.light-mode .batch-card:hover,
+        body.light-mode .cal-day:hover {
+            background: rgba(255,255,255,0.86) !important;
+            border-color: rgba(36,94,232,0.22) !important;
+            box-shadow: 0 12px 28px rgba(31,41,55,0.10), inset 0 1px 0 rgba(255,255,255,0.85) !important;
+        }
+        body.light-mode .cal-day.active {
+            border-color: var(--accent) !important;
+            background: rgba(36,94,232,0.10) !important;
+            box-shadow: inset 0 0 0 1px rgba(36,94,232,0.12) !important;
+        }
+
+        body.light-mode .badge {
+            background: rgba(255,255,255,0.62) !important;
+            color: var(--text-secondary);
+            border-color: rgba(31,41,55,0.13) !important;
+        }
+        body.light-mode .badge.success,
+        body.light-mode .success-btn,
+        body.light-mode .cloud-synced {
+            color: var(--success) !important;
+            border-color: rgba(8,127,91,0.28) !important;
+            background: rgba(8,127,91,0.08) !important;
+        }
+        body.light-mode .badge.warning,
+        body.light-mode .warning-btn {
+            color: var(--warning) !important;
+            border-color: rgba(161,98,7,0.28) !important;
+            background: rgba(161,98,7,0.08) !important;
+        }
+        body.light-mode .badge.danger,
+        body.light-mode .danger-btn,
+        body.light-mode .cloud-saving,
+        body.light-mode .cloud-offline,
+        body.light-mode .cloud-error {
+            color: var(--danger) !important;
+            border-color: rgba(217,45,32,0.30) !important;
+            background: rgba(217,45,32,0.08) !important;
+        }
+
+        body.light-mode .enchanted {
+            background: linear-gradient(110deg, var(--success) 20%, #111827 50%, var(--success) 80%);
+            background-size: 200% auto;
+            color: transparent !important;
+            -webkit-background-clip: text;
+            background-clip: text;
+            text-shadow: none !important;
+        }
+        body.light-mode .placeholder-logo .logo-ring { stroke: rgba(17,24,39,0.84); }
+        body.light-mode .placeholder-logo .logo-mark { stroke: var(--accent); }
+
+        body.light-mode [style*="color:#fff"],
+        body.light-mode [style*="color: #fff"],
+        body.light-mode [style*="color:#ffffff"],
+        body.light-mode [style*="color: #ffffff"] {
+            color: var(--text-primary) !important;
+        }
+        body.light-mode [style*="background:rgba(0,0,0"],
+        body.light-mode [style*="background: rgba(0,0,0"],
+        body.light-mode [style*="background:var(--glass-bg)"],
+        body.light-mode [style*="background: var(--glass-bg)"] {
+            background: rgba(255,255,255,0.68) !important;
+        }
+        body.light-mode [style*="border-top: 1px solid var(--glass-border)"],
+        body.light-mode [style*="border-bottom:1px solid var(--glass-border)"],
+        body.light-mode [style*="border-bottom: 1px solid var(--glass-border)"] {
+            border-color: var(--glass-border) !important;
+        }
+        body.light-mode .mobile-bottom-nav {
+            background: rgba(255,255,255,0.88) !important;
+            box-shadow: 0 14px 36px rgba(31,41,55,0.18) !important;
+        }
+        body.light-mode #whiteboard-frame { background: #ffffff; }
+
+
+
+        /* v2.8 desktop toolbar grouping and refined light-mode SaaS palette */
+        .mobile-tool-only { display: none !important; }
+        .desktop-tool-only { display: inline-flex; }
+        .tool-dropdown { position: relative; align-items: stretch; }
+        .tool-dropdown-toggle { display: inline-flex; align-items: center; gap: 8px; }
+        .tool-chevron { font-size: 0.9rem; line-height: 1; color: var(--text-secondary); transform: translateY(-1px); }
+        .tool-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 190px;
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            background: rgba(25,25,28,0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+            z-index: 1300;
+        }
+        .tool-dropdown:hover .tool-dropdown-menu,
+        .tool-dropdown:focus-within .tool-dropdown-menu { display: flex; flex-direction: column; gap: 6px; }
+        .tool-dropdown-menu .nav-btn { width: 100%; justify-content: flex-start; text-align: left; }
+        @media (max-width: 768px) {
+            .desktop-tool-only { display: none !important; }
+            .mobile-tool-only { display: flex !important; }
+        }
+
+        body.light-mode {
+            --bg-base: #f6f8fb;
+            --glass-bg: rgba(255,255,255,0.70);
+            --glass-border: rgba(100,116,139,0.18);
+            --text-primary: #172033;
+            --text-secondary: #64748b;
+            --accent: #2563eb;
+            --success: #2f6f4e;
+            --warning: #a16207;
+            --glow: 0 18px 42px rgba(15,23,42,0.09), inset 0 1px 0 rgba(255,255,255,0.76);
+            background:
+                radial-gradient(circle at 8% -10%, rgba(96,165,250,0.11), transparent 34%),
+                radial-gradient(circle at 92% 2%, rgba(129,140,248,0.10), transparent 30%),
+                linear-gradient(180deg, #fbfcff 0%, #f2f6fb 100%) !important;
+        }
+        body.light-mode .ambient-light { opacity: 0.15 !important; }
+        body.light-mode .light-1 { background: #c7d7ff !important; }
+        body.light-mode .light-2 { background: #d8e3ff !important; }
+
+        body.light-mode button:not(.logo-shell),
+        body.light-mode .nav-btn,
+        body.light-mode .icon-btn,
+        body.light-mode .tab-btn,
+        body.light-mode .mobile-btn,
+        body.light-mode .language-option {
+            background: rgba(244,247,251,0.66) !important;
+            border-color: rgba(100,116,139,0.20) !important;
+            color: var(--text-primary) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.55) !important;
+        }
+        body.light-mode button:not(.logo-shell):hover,
+        body.light-mode .nav-btn:hover,
+        body.light-mode .icon-btn:hover,
+        body.light-mode .tab-btn:hover,
+        body.light-mode .language-option:hover {
+            background: rgba(235,241,249,0.90) !important;
+            border-color: rgba(37,99,235,0.22) !important;
+            box-shadow: 0 10px 24px rgba(15,23,42,0.08), inset 0 1px 0 rgba(255,255,255,0.78) !important;
+        }
+        body.light-mode .top-nav .nav-btn,
+        body.light-mode .tool-dropdown-toggle {
+            background: rgba(240,244,250,0.72) !important;
+        }
+        body.light-mode .tool-dropdown-menu {
+            background: rgba(248,250,252,0.94) !important;
+            border-color: rgba(100,116,139,0.20) !important;
+            box-shadow: 0 20px 42px rgba(15,23,42,0.13) !important;
+        }
+        body.light-mode .nav-btn.accent-ui,
+        body.light-mode .tab-btn.active,
+        body.light-mode .mobile-btn.active,
+        body.light-mode .language-option.active,
+        body.light-mode .mobile-language-option.active {
+            background: rgba(37,99,235,0.11) !important;
+            color: var(--accent) !important;
+            border-color: rgba(37,99,235,0.28) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.78), 0 8px 20px rgba(37,99,235,0.08) !important;
+        }
+        body.light-mode .badge.success,
+        body.light-mode .success-btn,
+        body.light-mode .cloud-synced {
+            color: #2f6f4e !important;
+            border-color: rgba(47,111,78,0.28) !important;
+            background: rgba(232,243,236,0.92) !important;
+        }
+        body.light-mode .badge {
+            background: rgba(240,244,250,0.72) !important;
+            border-color: rgba(100,116,139,0.18) !important;
+        }
+
+        body.light-mode .badge.warning,
+        body.light-mode .warning-btn {
+            color: #9a6700 !important;
+            border-color: rgba(154,103,0,0.28) !important;
+            background: rgba(255,248,225,0.88) !important;
+        }
+        body.light-mode .badge.danger,
+        body.light-mode .danger-btn,
+        body.light-mode .cloud-saving,
+        body.light-mode .cloud-offline,
+        body.light-mode .cloud-error {
+            color: #bf2f24 !important;
+            border-color: rgba(191,47,36,0.30) !important;
+            background: rgba(255,235,232,0.88) !important;
+        }
+        body.light-mode .enchanted {
+            background: linear-gradient(110deg, #2f6f4e 18%, #a9d8bb 38%, #ffffff 50%, #c8f0d5 62%, #2f6f4e 82%) !important;
+            background-size: 220% auto !important;
+            color: transparent !important;
+            -webkit-background-clip: text !important;
+            background-clip: text !important;
+            text-shadow: 0 0 10px rgba(47,111,78,0.10) !important;
+        }
+        body.light-mode .tab-btn,
+        body.light-mode .mobile-btn,
+        body.light-mode .language-option {
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        body.light-mode .tab-btn.active,
+        body.light-mode .mobile-btn.active,
+        body.light-mode .language-option.active,
+        body.light-mode .mobile-language-option.active,
+        body.light-mode .nav-btn.accent-ui {
+            background: rgba(37,99,235,0.10) !important;
+            color: var(--accent) !important;
+            border-color: rgba(37,99,235,0.28) !important;
+        }
+        body.light-mode #overview > .grid-3.panel {
+            background: linear-gradient(135deg, rgba(255,255,255,0.76), rgba(241,245,249,0.74)) !important;
         }
 
     </style>
@@ -526,12 +867,31 @@
                 <button class="nav-btn mobile-language-option" id="mobile-language-option-de" type="button" onclick="setLanguage('de'); closeToolBag()"><span aria-hidden="true">🇩🇪</span><span>DE</span></button>
             </div>
         </div>
+        <button class="nav-btn theme-toggle-btn" id="theme-toggle" type="button" onclick="toggleTheme(); closeToolBag()" aria-label="Switch theme">
+            <span class="theme-icon theme-icon-sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M4.93 4.93l1.41 1.41"></path><path d="M17.66 17.66l1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="M4.93 19.07l1.41-1.41"></path><path d="M17.66 6.34l1.41-1.41"></path></svg></span>
+            <span class="theme-icon theme-icon-moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8Z"></path></svg></span>
+            <span id="theme-toggle-label">Light Mode</span>
+        </button>
         <button class="nav-btn accent-ui" onclick="switchTab('whiteboard'); closeToolBag()" data-i18n="whiteboard">Whiteboard</button>
-        <button class="nav-btn" onclick="exportBackup(); closeToolBag()" data-i18n="exportBackup">Export Backup</button>
-        <button class="nav-btn" onclick="triggerImport(); closeToolBag()" data-i18n="importBackup">Import Backup</button>
+        <div class="tool-dropdown desktop-tool-only">
+            <button class="nav-btn tool-dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false"><span data-i18n="backup">Backup</span><span class="tool-chevron" aria-hidden="true">⌄</span></button>
+            <div class="tool-dropdown-menu" role="menu">
+                <button class="nav-btn" type="button" onclick="exportBackup(); closeToolBag()" data-i18n="exportBackup" role="menuitem">Export Backup</button>
+                <button class="nav-btn" type="button" onclick="triggerImport(); closeToolBag()" data-i18n="importBackup" role="menuitem">Import Backup</button>
+            </div>
+        </div>
+        <button class="nav-btn mobile-tool-only" onclick="exportBackup(); closeToolBag()" data-i18n="exportBackup">Export Backup</button>
+        <button class="nav-btn mobile-tool-only" onclick="triggerImport(); closeToolBag()" data-i18n="importBackup">Import Backup</button>
         <input type="file" id="backup-file" accept="application/json" style="display:none" onchange="importBackup(event)">
-        <button class="nav-btn" onclick="window.location.reload()" data-i18n="refresh">Refresh</button>
-        <button class="nav-btn" onclick="logoutUser(); closeToolBag()" data-i18n="signOut">Sign Out</button>
+        <div class="tool-dropdown desktop-tool-only">
+            <button class="nav-btn tool-dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false"><span data-i18n="system">System</span><span class="tool-chevron" aria-hidden="true">⌄</span></button>
+            <div class="tool-dropdown-menu" role="menu">
+                <button class="nav-btn" type="button" onclick="window.location.reload()" data-i18n="refresh" role="menuitem">Refresh</button>
+                <button class="nav-btn" type="button" onclick="logoutUser(); closeToolBag()" data-i18n="signOut" role="menuitem">Sign Out</button>
+            </div>
+        </div>
+        <button class="nav-btn mobile-tool-only" onclick="window.location.reload()" data-i18n="refresh">Refresh</button>
+        <button class="nav-btn mobile-tool-only" onclick="logoutUser(); closeToolBag()" data-i18n="signOut">Sign Out</button>
     </div>
 </nav>
 
@@ -871,9 +1231,10 @@
 
     const LANGUAGE_KEY = 'otDashboardLanguage';
     const MOVEMENT_COLLAPSE_KEY = 'otDashboardMovementsCollapsed';
+    const THEME_KEY = 'rhDashboardTheme';
     const TRANSLATIONS = {
         en: {
-            languageEnglish: 'English', languageGerman: 'German', language: 'Language', dashboardTools: 'Dashboard tools', tools: 'Tools', whiteboard: 'Whiteboard', exportBackup: 'Export Backup', importBackup: 'Import Backup', refresh: 'Refresh', signOut: 'Sign Out',
+            languageEnglish: 'English', languageGerman: 'German', language: 'Language', dashboardTools: 'Dashboard tools', tools: 'Tools', backup: 'Backups', system: 'System', themeLight: 'Light Mode', themeDark: 'Dark Mode', switchTheme: 'Switch theme', whiteboard: 'Whiteboard', exportBackup: 'Export Backup', importBackup: 'Import Backup', refresh: 'Refresh', signOut: 'Sign Out',
             authTitle: 'Unlock Admin Dashboard', authSubtitle: 'Sign in with one of the authorized dashboard accounts.', authSetupWarning: 'Firebase is not configured yet. Fill in the FIREBASE_CONFIG block in this HTML file, create the two users in Firebase Authentication, and publish the Firestore rules included with this download.', email: 'Email', password: 'Password', unlockDashboard: 'Unlock Dashboard', continueLocal: 'Continue local-only for testing', checkingBackend: 'Checking secure backend...',
             operationsTracker: 'Product Builder & Organizer', appTitle: 'BUSINESS OVERVIEW', appSubtitle: 'Total stock, formulas, batch costing, sales logging, and profit clarity.', versionBadge: 'v2.6 Dynamic', overviewSales: 'Overview & Sales', databaseStock: 'Database & Stock', formulator: 'Formulator', batchBuilder: 'Batch Builder', overview: 'Overview', database: 'Database', formula: 'Formula', batch: 'Batch',
             soldUnitProfit: 'Sold-Unit Profit', soldUnitProfitHelp: 'Logged sales minus proportional cost of sold units.', cashNetPosition: 'Cash Net Position', cashNetHelp: 'Logged sales minus all active batch costs.', potentialGrossRevenue: 'Potential Gross Revenue', potentialGrossHelp: 'Retail value of all active batches.', totalSunkCosts: 'Total Sunk Costs', sunkCostsHelp: 'Expenses from active batches.', remainingRetailValue: 'Remaining Retail Value', remainingRetailHelp: 'Unsold units at their retail price.', viewProfitTimeline: 'View Sold-Unit Profit Timeline', completedBatchesLedger: 'Completed Batches Ledger',
@@ -887,7 +1248,7 @@
             msgCorrupt: 'Stored data was corrupted, so a fresh state was loaded. If possible, a raw backup was kept in localStorage.', msgCouldNotSave: 'Could not save. Browser storage may be full.', msgSignOutFailed: 'Sign out failed. Please reload the page.', msgLocalOnly: 'Local-only mode is active. Configure Firebase before publishing to GitHub Pages.', msgCloudSaved: 'Cloud saved.', msgBatchInactive: 'This batch is not active.', msgValidQty: 'Enter a valid whole quantity.', msgSellTooMany: 'You cannot sell more than the remaining batch quantity.', msgSaleLogged: 'Sale logged.', msgSaleRemoved: 'Sale removed.', msgEditCancelled: 'Edit cancelled. The original batch was not changed.', msgRemoveSalesBeforeVoid: 'Remove logged sales before voiding this batch.', msgBatchVoided: 'Batch voided and stock refunded.', msgBatchVoidedConfirm: 'This will archive the batch and return all deducted materials, hardware, and packaging to stock. The batch record remains in backup history.', msgSupplierRequired: 'Supplier name is required.', msgSupplierUrl: 'Supplier URL must start with http:// or https://.', msgSupplierSaved: 'Supplier saved.', msgAddSupplierFirst: 'Add an active supplier first or select one.', msgSelectActiveSupplier: 'Select an active supplier.', msgItemRequired: 'Item name is required.', msgPkgGreaterZero: 'Package amount must be greater than zero.', msgItemSaved: 'Item saved.', msgArchiveSupplierRefs: 'Archive or reassign active items from this supplier first.', msgSupplierArchived: 'Supplier archived.', msgSupplierRestored: 'Supplier restored.', msgArchiveItemFormula: 'Archive or edit formulations that use this item first.', msgItemArchived: 'Item archived.', msgArchiveItemWithStock: 'This item still has stock. Archive anyway? History remains in backups and movements.', msgRestoreSupplierFirst: 'Restore the supplier first or reassign it.', msgItemRestored: 'Item restored.', msgFormulaName: 'Please enter a formulation name.', msgFormulaTotal: 'Formula must total 100%. Current total: {total}%.', msgAddMaterial: 'Add at least one material.', msgMissingFormulaItem: 'Formula contains a missing or archived item: {name}', msgImageUrl: 'Image URL must start with http:// or https://.', msgCannotEditArchivedFormula: 'An archived or missing formulation cannot be edited.', msgFormSaved: 'Formulation saved.', msgFormArchived: 'Formulation archived.', msgRestoreFormulaItem: 'Restore or replace missing formula item before restoring: {name}', msgFormRestored: 'Formulation restored.', msgSelectFormula: 'Select a formulation.', msgArchivedFormula: 'Selected formulation is archived.', msgWholeYield: 'Set a whole-number target yield.', msgFillGreaterZero: 'Fill amount must be greater than zero.', msgNotEnoughStock: 'Not enough stock for this target yield.', msgFixMissing: 'Fix missing or archived items before finalizing.', msgRecalcStock: 'Not enough stock after recalculation.', msgOriginalMissing: 'Original batch not found.', msgYieldLowerSold: 'New yield cannot be lower than already sold units ({units}).', msgEditDeductFailed: 'Stock deduction failed while saving the edit.', msgBatchUpdated: 'Batch safely updated.', msgDeductFailed: 'Stock deduction failed.', msgBatchFinalized: 'Batch finalized and stock deducted.', msgBackupExported: 'Backup exported.', msgBackupImported: 'Backup imported.', msgImportFailed: 'Import failed. The file is not valid JSON.'
         },
         de: {
-            languageEnglish: 'Englisch', languageGerman: 'Deutsch', language: 'Sprache', dashboardTools: 'Dashboard-Tools', tools: 'Tools', whiteboard: 'Whiteboard', exportBackup: 'Backup exportieren', importBackup: 'Backup importieren', refresh: 'Aktualisieren', signOut: 'Abmelden',
+            languageEnglish: 'Englisch', languageGerman: 'Deutsch', language: 'Sprache', dashboardTools: 'Dashboard-Tools', tools: 'Tools', backup: 'Backups', system: 'System', themeLight: 'Hellmodus', themeDark: 'Dunkelmodus', switchTheme: 'Design wechseln', whiteboard: 'Whiteboard', exportBackup: 'Backup exportieren', importBackup: 'Backup importieren', refresh: 'Aktualisieren', signOut: 'Abmelden',
             authTitle: 'Admin Dashboard entsperren', authSubtitle: 'Melde dich mit einem autorisierten Dashboard-Konto an. ', authSetupWarning: 'Firebase ist noch nicht konfiguriert. Trage die FIREBASE_CONFIG-Werte in diese HTML-Datei ein, erstelle die zwei Benutzer in Firebase Authentication und veröffentliche die enthaltenen Firestore-Regeln.', email: 'E-Mail', password: 'Passwort', unlockDashboard: 'Dashboard entsperren', continueLocal: 'Lokal zum Testen fortfahren', checkingBackend: 'Sicheres Backend wird geprüft...',
             operationsTracker: 'Produktentwickler und Organisator', appTitle: 'GESCHÄFTSÜBERSICHT', appSubtitle: 'Übersicht für Lager, Rezepturen, Batch-Kosten, Verkaufsprotokolle und Gewinnklarheit.', versionBadge: 'v2.6 Dynamic', overviewSales: 'Übersicht & Verkäufe', databaseStock: 'Datenbank & Lager', formulator: 'Rezeptur', batchBuilder: 'Batch-Builder', overview: 'Übersicht', database: 'Datenbank', formula: 'Rezeptur', batch: 'Batch',
             soldUnitProfit: 'Gewinn verkaufter Einheiten', soldUnitProfitHelp: 'Verkäufe minus anteilige Kosten der verkauften Einheiten.', cashNetPosition: 'Cash-Netto-Position', cashNetHelp: 'Verkäufe minus alle Kosten aktiver Batches.', potentialGrossRevenue: 'Potenzieller Bruttoumsatz', potentialGrossHelp: 'Verkaufswert aller aktiven Batches.', totalSunkCosts: 'Gesamte gebundene Kosten', sunkCostsHelp: 'Ausgaben aus aktiven Batches.', remainingRetailValue: 'Restlicher Verkaufswert', remainingRetailHelp: 'Nicht verkaufte Einheiten zum Verkaufspreis.', viewProfitTimeline: 'Gewinn-Timeline anzeigen', completedBatchesLedger: 'Abgeschlossene Batches',
@@ -902,6 +1263,7 @@
         }
     };
     let currentLanguage = localStorage.getItem(LANGUAGE_KEY) || 'en';
+    let currentTheme = localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark';
 
     let pendingNotices = [];
     let state = loadState();
@@ -980,6 +1342,7 @@
     window.enterLocalMode = enterLocalMode;
     window.setLanguage = setLanguage;
     window.toggleLanguageMenu = toggleLanguageMenu;
+    window.toggleTheme = toggleTheme;
 
     function $(id) { return document.getElementById(id); }
 
@@ -1012,6 +1375,7 @@
         const toggle = $('language-toggle');
         if (toggle) toggle.setAttribute('aria-label', currentLanguage === 'de' ? 'Sprache wechseln' : 'Change language');
         refreshCloudStatusText();
+        updateThemeToggle();
     }
     function setLanguage(lang) {
         currentLanguage = TRANSLATIONS[lang] ? lang : 'en';
@@ -1034,6 +1398,39 @@
         const btn = $('language-toggle');
         if (box) box.classList.remove('open');
         if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+
+    function applyTheme(persist) {
+        const isLight = currentTheme === 'light';
+        document.body.classList.toggle('light-mode', isLight);
+        document.body.classList.toggle('dark-mode', !isLight);
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme) metaTheme.setAttribute('content', isLight ? '#f4f1ea' : '#030303');
+        if (persist) {
+            try { localStorage.setItem(THEME_KEY, currentTheme); } catch (e) {}
+        }
+        updateThemeToggle();
+        if (profitChartInst && $('profit-chart-container') && $('profit-chart-container').style.display === 'block') renderProfitChart();
+        if (chartInst) updateChemVisuals();
+    }
+    function toggleTheme() {
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+        applyTheme(true);
+    }
+    function updateThemeToggle() {
+        const button = $('theme-toggle');
+        const label = $('theme-toggle-label');
+        const targetKey = currentTheme === 'light' ? 'themeDark' : 'themeLight';
+        if (label) label.textContent = t(targetKey);
+        if (button) {
+            button.setAttribute('aria-label', t('switchTheme') + ': ' + t(targetKey));
+            button.setAttribute('title', t(targetKey));
+        }
+    }
+    function cssVar(name, fallback) {
+        const value = getComputedStyle(document.body).getPropertyValue(name).trim();
+        return value || fallback || '';
     }
     function defaultState() {
         const now = new Date().toISOString();
@@ -1309,6 +1706,7 @@
         cloudStatusKey = isSynced ? 'cloudSynced' : 'cloudNotConnected';
         cloudStatusType = isSynced ? 'success' : 'danger';
         refreshCloudStatusText();
+        updateThemeToggle();
         const el = $('cloud-status-display');
         if (!el) return;
         el.className = 'badge ' + (isSynced ? 'cloud-synced' : 'cloud-error');
@@ -1654,12 +2052,16 @@
         }
         const ctx = $('profitChart').getContext('2d');
         if (profitChartInst) profitChartInst.destroy();
-        Chart.defaults.color = '#888899';
+        const textColor = cssVar('--text-secondary', '#888899');
+        const successColor = cssVar('--success', '#33ff99');
+        const gridColor = document.body.classList.contains('light-mode') ? 'rgba(31,41,55,0.12)' : 'rgba(255,255,255,0.05)';
+        const fillColor = document.body.classList.contains('light-mode') ? 'rgba(47,143,104,0.12)' : 'rgba(51,255,153,0.10)';
+        Chart.defaults.color = textColor;
         Chart.defaults.font.family = 'Inter';
         profitChartInst = new Chart(ctx, {
             type: 'line',
-            data: { labels: labels, datasets: [{ label: 'Cumulative Sold-Unit Profit', data: data, borderColor: '#33ff99', backgroundColor: 'rgba(51, 255, 153, 0.1)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 4 }] },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
+            data: { labels: labels, datasets: [{ label: 'Cumulative Sold-Unit Profit', data: data, borderColor: successColor, backgroundColor: fillColor, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: gridColor } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
         });
     }
     function renderOverview() {
@@ -2655,6 +3057,7 @@
         if (lang && lang.classList.contains('open') && !lang.contains(e.target)) closeLanguageMenu();
     });
 
+    applyTheme(false);
     applyTranslations();
     initAuthGate();
 })();
